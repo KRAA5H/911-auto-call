@@ -1,56 +1,52 @@
 package org.example
 
 import ai.koog.agents.core.agent.AIAgent
-import ai.koog.prompt.executor.llms.all.simpleOpenAIExecutor
-import ai.koog.prompt.executor.clients.openai.OpenAIModels
+import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.asTools
 import ai.koog.prompt.executor.clients.anthropic.AnthropicModels.Haiku_4_5
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
-import org.example.agents.location.LocationTools
+import org.example.agents.location.LocationAgent
+import org.example.agents.location.LocationBridge
 import kotlinx.coroutines.runBlocking
 
 fun main() = runBlocking {
-    println("🚀 Starting Koog Agent Demo with OpenAI...")
+    val apiKey = System.getenv("ANTHROPIC_API_KEY")
+        ?: error("❌ ANTHROPIC_API_KEY environment variable is not set.")
 
-    // Get API key from environment variable
-    val apiKey = System.getenv("OPENAI_API_KEY")
-        ?: error("❌ OPENAI_API_KEY environment variable is not set. Please set it first.")
+    println("🚀 Starting 911 Dispatch System (Multi-Agent)...")
 
-    // Create a simple AI agent using OpenAI
-    val agent = AIAgent(
-        // 1. MUST use the Anthropic executor for Anthropic models
+    // 1. Initialize the Sub-Agent (The Specialist)
+    // This agent holds the actual maps and routing logic.
+    val locationAgent = LocationAgent(apiKey)
+
+    // 2. Create the Bridge (The Interface)
+    // This wraps the LocationAgent so the Main Agent sees it as a "tool".
+    val locationBridge = LocationBridge(locationAgent)
+
+    // 3. Register the Bridge Tool for the Main Agent
+    val mainRegistry = ToolRegistry {
+        tools(locationBridge.asTools())
+    }
+
+    // 4. Create the Main Supervisor Agent
+    // Notice: It doesn't have 'LocationTools'. It only has 'LocationBridge'.
+    val supervisorAgent = AIAgent(
         promptExecutor = simpleAnthropicExecutor(apiKey),
-        // 2. Use the correct, raw model ID string.
-        // There is no "Haiku 4.5". The current model is "claude-3-haiku-20240307".
         llmModel = Haiku_4_5,
 
-        systemPrompt = "You are a helpful AI assistant. Be concise and friendly in your responses."
+        systemPrompt = "You are a 911 Supervisor. You do not have direct access to maps. You MUST delegate any location verification or ETA tasks to your 'consultLocationSpecialist' tool. Once they reply, combine their technical data into a final report for the user.",
+
+        toolRegistry = mainRegistry
     )
-    val myLocationTools = LocationTools()
 
-    // Test the agent with a simple query
-    println("\n💬 Asking agent: 'Hello! Can you introduce yourself?'")
-    val response = agent.run("Hello! Can you introduce yourself?")
+    // 5. Run the Test Scenario
+    val incidentPrompt = "We have a reported fire at 'Tower Bridge, London'. Verify this location and tell me the ETA for the nearest unit."
 
-    println("\n✅ Agent Response:")
-    println(response)
+    println("\n💬 User: '$incidentPrompt'")
 
-    println("\n🎉 Koog is working with OpenAI!")
+    // The Supervisor will receive this, decide it needs help, call the Bridge,
+    // which calls the Location Agent, which calls the Tools.
+    val response = supervisorAgent.run(incidentPrompt)
 
-    val tools = LocationTools()
-
-    println("--- Testing Verify Address ---")
-    // Test a known valid location
-    val result1 = tools.verifyAddress("10 Downing Street", "London")
-    println(result1)
-
-    println("\n--- Testing Reverse Geocode (Landmark) ---")
-    // Test a famous landmark
-    val result2 = tools.reverseGeocodeLandmarks("Eiffel Tower")
-    println(result2)
-
-    println("\n--- Testing ETA Calculation ---")
-    // Test routing from the hardcoded unit location (London) to another London spot
-    val result3 = tools.calculateUnitEta("Tower Bridge, London")
-    println(result3)
+    println("\n🤖 Supervisor Final Report:\n$response")
 }
