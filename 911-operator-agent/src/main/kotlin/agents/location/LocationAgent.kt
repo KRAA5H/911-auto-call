@@ -1,4 +1,5 @@
 package org.example.agents.location
+
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.asTools
@@ -18,7 +19,7 @@ class LocationAgent(apiKey: String) {
         promptExecutor = simpleAnthropicExecutor(apiKey),
         llmModel = Haiku_4_5,
         // Specialized System Prompt: It only cares about location accuracy
-        systemPrompt = "You are a Location Specialist. Your job is to verify addresses and calculate travel times using your tools. Be precise and technical. Return only the facts.",
+        systemPrompt = "You are a Location Specialist. Verify addresses or landmarks. If a location is a known landmark (like 'Tower Bridge'), accept the general coordinates and calculate the ETA to the main entrance/center. Do not ask for clarification unless the location is completely unknown.",
         toolRegistry = registry
     )
 
