@@ -1,35 +1,54 @@
-package org.example.api
+package example.api
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import example.agents.supervisor.SupervisorAgent
+import io.ktor.server.plugins.contentnegotiation.* // Required for JSON
+import io.ktor.serialization.kotlinx.json.* // Required for JSON
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
+import example.agents.supervisor.SupervisorAgent
 
 @Serializable
 data class ElevenLabsToolCall(
     val conversation_id: String,
-    val transcript: String // "There is a fire at Tower Bridge"
+    val transcript: String
 )
 
 fun Application.configureElevenLabsRoutes() {
-    // One instance of the supervisor for the app (in production, use a Map of conversation_id -> Agent)
+    // 1. CRITICAL: Install JSON support so the server can understand the CURL request
+    install(ContentNegotiation) {
+        json(Json {
+            prettyPrint = true
+            ignoreUnknownKeys = true
+        })
+    }
+
+    // Initialize the agent (this might take 1-2 seconds on startup)
     val supervisor = SupervisorAgent()
 
     routing {
-        // ElevenLabs will POST to this URL when it needs help
         post("/consult_supervisor") {
-            val request = call.receive<ElevenLabsToolCall>()
+            println("📞 Webhook received request...") // Debug log 1
 
-            println("📞 Incoming Call: ${request.transcript}")
+            try {
+                // 2. This line will fail if ContentNegotiation isn't installed
+                val request = call.receive<ElevenLabsToolCall>()
 
-            // 1. Run the Main Agent Logic
-            // The Main Agent will internally call Location/Medical agents as needed
-            val response = supervisor.handleRequest(request.transcript)
+                println("🗣️ ElevenLabs Transcript: '${request.transcript}'") // Debug log 2
 
-            // 2. Return text for ElevenLabs to speak back to the user
-            call.respondText(response)
+                val response = supervisor.handleRequest(request.transcript)
+
+                println("🤖 Agent Response: '$response'") // Debug log 3
+
+                call.respondText(response)
+            } catch (e: Exception) {
+                // Catch serialization errors to see why it failed
+                println("❌ ERROR: ${e.localizedMessage}")
+                e.printStackTrace()
+                call.respondText("Server Error: ${e.localizedMessage}")
+            }
         }
     }
 }

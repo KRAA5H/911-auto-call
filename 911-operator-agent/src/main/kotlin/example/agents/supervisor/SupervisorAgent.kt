@@ -5,8 +5,8 @@ import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.asTools
 import ai.koog.prompt.executor.clients.anthropic.AnthropicModels
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
-import org.example.agents.location.LocationAgent
-import org.example.agents.location.LocationBridge
+import example.agents.specialists.location.LocationAgent
+import example.agents.specialists.location.LocationBridge
 
 class SupervisorAgent {
     private val apiKey = System.getenv("ANTHROPIC_API_KEY") ?: error("Missing API Key")
