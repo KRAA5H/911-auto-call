@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.anthropic:anthropic-java:0.8.0")
     implementation("ai.koog:koog-agents:0.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
@@ -20,6 +21,8 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
     implementation("ch.qos.logback:logback-classic:1.4.14")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.json:json:20231013")
 }
 
 kotlin {
