@@ -44,6 +44,7 @@ dependencies {
     // Anthropic Claude API client (The CORRECT one)
     implementation("com.anthropic:anthropic-java:0.8.0")
 
+
     // Environment variable loading
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 
@@ -63,7 +64,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("medical-protocol-agent.MedicalAgentKt")
+    mainClass.set("org.example.MainKt")
 }
 
 tasks.test {

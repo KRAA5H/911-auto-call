@@ -40,6 +40,7 @@ python src/main.py
 
 ## Documentation
 
+- [AI Agents TODO List](AI_AGENTS_TODO.md)
 - [Feature Set](FEATURES.md)
 - [System Architecture](ARCHITECTURE.md)
 - [Folder Structure](FOLDER_STRUCTURE.md)
