@@ -19,7 +19,7 @@ class LocationAgent(apiKey: String) {
         promptExecutor = simpleAnthropicExecutor(apiKey),
         llmModel = Haiku_4_5,
         // Specialized System Prompt: It only cares about location accuracy
-        systemPrompt = "You are a Location Specialist. Verify addresses or landmarks. If a location is a known landmark (like 'Tower Bridge'), accept the general coordinates and calculate the ETA to the main entrance/center. Do not ask for clarification unless the location is completely unknown.",
+        systemPrompt = "You are a Location Specialist. Verify addresses or landmarks. If a location is a known landmark (like 'Tower Bridge'), accept the general coordinates and calculate the ETA to the example.main entrance/center. Do not ask for clarification unless the location is completely unknown.",
         toolRegistry = registry
     )
 

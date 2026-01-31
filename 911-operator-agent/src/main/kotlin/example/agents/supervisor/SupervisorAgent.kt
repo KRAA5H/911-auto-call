@@ -1,23 +1,25 @@
-package agents.supervisor
+package example.agents.supervisor
 
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.asTools
 import ai.koog.prompt.executor.clients.anthropic.AnthropicModels
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
+import org.example.agents.location.LocationAgent
+import org.example.agents.location.LocationBridge
 
 class SupervisorAgent {
     private val apiKey = System.getenv("ANTHROPIC_API_KEY") ?: error("Missing API Key")
 
     // 1. Instantiate Specialists
     private val locAgent = LocationAgent(apiKey)
-    private val medAgent = MedicalAgent(apiKey)
+//    private val medAgent = MedicalAgent(apiKey)
     // private val fireAgent = FireAgent(apiKey)
 
     // 2. Create Bridges (Tools)
     private val bridges = ToolRegistry.Companion {
         tools(LocationBridge(locAgent).asTools())
-        tools(MedicalBridge(medAgent).asTools()) // New Medical Bridge
+//        tools(MedicalBridge(medAgent).asTools()) // New Medical Bridge
         // tools(FireBridge(fireAgent).asTools())
     }
 
@@ -42,7 +44,7 @@ class SupervisorAgent {
         toolRegistry = bridges
     )
 
-    fun handleRequest(transcript: String): String {
+    suspend fun handleRequest(transcript: String): String {
         return agent.run(transcript)
     }
 }

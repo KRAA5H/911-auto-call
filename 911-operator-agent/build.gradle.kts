@@ -64,7 +64,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("org.example.MainKt")
+    mainClass.set("Application")
 }
 
 tasks.test {
