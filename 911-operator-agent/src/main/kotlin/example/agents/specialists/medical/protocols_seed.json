@@ -1,0 +1,193 @@
+[
+  {
+    "conditionName": "Cardiac Arrest - Adult",
+    "conditionCategory": "cardiac",
+    "severityLevel": "life_threatening",
+    "immediateAction": "Start CPR immediately",
+    "stepByStepInstructions": [
+      "Ensure the scene is safe",
+      "Check if the person responds - shake their shoulders and shout",
+      "If no response, shout for help",
+      "Tilt their head back and lift their chin to open the airway",
+      "Check for breathing for no more than 10 seconds",
+      "If not breathing normally, start CPR immediately",
+      "Place one hand in the center of their chest, place your other hand on top",
+      "Push down hard and fast - at least 5cm deep",
+      "Do 30 chest compressions at a rate of 100-120 per minute",
+      "Give 2 rescue breaths, then continue with 30 compressions and 2 breaths",
+      "Continue until help arrives or the person starts breathing"
+    ],
+    "criticalWarnings": [
+      "Do not stop CPR until the person shows signs of life or help arrives",
+      "Push hard and fast - don't worry about pushing too hard",
+      "If you're not trained in rescue breaths, do continuous chest compressions only"
+    ],
+    "ageGroups": ["adult"],
+    "timeCritical": true
+  },
+  {
+    "conditionName": "Severe Bleeding",
+    "conditionCategory": "trauma",
+    "severityLevel": "life_threatening",
+    "immediateAction": "Apply direct pressure to the wound immediately",
+    "stepByStepInstructions": [
+      "Apply direct pressure with a clean cloth or your hand",
+      "Press firmly on the wound",
+      "If cloth becomes soaked with blood, add more on top - don't remove the first cloth",
+      "If possible, elevate the injured area above the level of the heart",
+      "Keep pressure on for at least 10 minutes",
+      "If bleeding is from a limb and won't stop, consider applying a tourniquet",
+      "Keep the person still and lying down",
+      "Keep them warm with a blanket or coat"
+    ],
+    "criticalWarnings": [
+      "Do not remove embedded objects - stabilize them instead",
+      "Tourniquets should only be used as a last resort for life-threatening limb bleeding",
+      "Never apply a tourniquet to the neck, head, or torso"
+    ],
+    "ageGroups": ["adult", "child"],
+    "timeCritical": true
+  },
+  {
+    "conditionName": "Choking - Airway Obstruction",
+    "conditionCategory": "respiratory",
+    "severityLevel": "life_threatening",
+    "immediateAction": "Encourage them to cough if they can",
+    "stepByStepInstructions": [
+      "If they can cough, encourage them to keep coughing",
+      "If they cannot cough, speak, or breathe, start back blows",
+      "Stand behind them and slightly to one side",
+      "Support their chest with one hand and lean them forward",
+      "Give up to 5 sharp blows between their shoulder blades with the heel of your hand",
+      "If back blows don't work, give up to 5 abdominal thrusts",
+      "Stand behind them and put your arms around their waist",
+      "Place a clenched fist just above their belly button",
+      "Grasp the fist with your other hand and pull sharply inwards and upwards",
+      "Alternate between 5 back blows and 5 abdominal thrusts until the object comes out"
+    ],
+    "criticalWarnings": [
+      "If they become unconscious, start CPR immediately",
+      "Don't give abdominal thrusts to babies under 1 year old",
+      "After abdominal thrusts, the person should see a doctor"
+    ],
+    "ageGroups": ["adult", "child"],
+    "timeCritical": true
+  },
+  {
+    "conditionName": "Chest Pain - Suspected Heart Attack",
+    "conditionCategory": "cardiac",
+    "severityLevel": "life_threatening",
+    "immediateAction": "Have them sit down and rest immediately",
+    "stepByStepInstructions": [
+      "Help them sit down in a comfortable position - half sitting is best",
+      "Loosen any tight clothing around their neck and chest",
+      "Ask if they have any heart medication like GTN spray",
+      "If they have aspirin and are not allergic, have them chew one 300mg tablet",
+      "Keep them calm and reassured",
+      "Monitor their breathing and consciousness",
+      "If they have GTN spray, help them take it as prescribed",
+      "If they become unconscious and stop breathing, start CPR"
+    ],
+    "criticalWarnings": [
+      "Time is critical - every minute counts",
+      "Do not give aspirin if they are allergic or under 16",
+      "Do not leave them alone"
+    ],
+    "ageGroups": ["adult"],
+    "timeCritical": true
+  },
+  {
+    "conditionName": "Stroke - FAST Signs",
+    "conditionCategory": "neurological",
+    "severityLevel": "life_threatening",
+    "immediateAction": "Note the time symptoms started",
+    "stepByStepInstructions": [
+      "Check for FAST signs: Face - has their face fallen on one side?",
+      "Arms - can they raise both arms and keep them there?",
+      "Speech - is their speech slurred?",
+      "Note the exact time the symptoms started - this is crucial",
+      "Lie them down with their head and shoulders slightly raised",
+      "If they're unconscious, put them in the recovery position",
+      "Do not give them anything to eat or drink",
+      "Loosen any tight clothing",
+      "Keep them calm and reassured",
+      "Monitor their breathing and consciousness"
+    ],
+    "criticalWarnings": [
+      "Time is critical - brain cells are dying",
+      "Even if symptoms disappear, they still need urgent assessment",
+      "Do not give aspirin - only paramedics should do this for stroke"
+    ],
+    "ageGroups": ["adult"],
+    "timeCritical": true
+  },
+  {
+    "conditionName": "Anaphylaxis - Severe Allergic Reaction",
+    "conditionCategory": "allergic",
+    "severityLevel": "life_threatening",
+    "immediateAction": "Use their EpiPen/adrenaline auto-injector if they have one",
+    "stepByStepInstructions": [
+      "Ask if they have an EpiPen or adrenaline auto-injector",
+      "If yes, help them use it immediately - inject into their outer thigh",
+      "Lie them down flat unless they're having trouble breathing",
+      "If they're having trouble breathing, let them sit up",
+      "If they're pregnant, lie them on their left side",
+      "If symptoms don't improve after 5 minutes, give a second injection if available",
+      "Keep them still and calm",
+      "Monitor their breathing and consciousness"
+    ],
+    "criticalWarnings": [
+      "They may need a second injection after 5 minutes",
+      "Remove any stinger if it's a bee sting (scrape, don't pinch)",
+      "Even if they improve, they must go to hospital"
+    ],
+    "ageGroups": ["adult", "child"],
+    "timeCritical": true
+  },
+  {
+    "conditionName": "Seizure - Convulsions",
+    "conditionCategory": "neurological",
+    "severityLevel": "urgent",
+    "immediateAction": "Protect them from injury but do not restrain them",
+    "stepByStepInstructions": [
+      "Stay with them and stay calm",
+      "Protect them from injury - move furniture away",
+      "Cushion their head with something soft if possible",
+      "Time the seizure if you can",
+      "Do not restrain them or put anything in their mouth",
+      "After the seizure, put them in the recovery position",
+      "Stay with them until they are fully recovered",
+      "They may be confused or sleepy afterwards - this is normal"
+    ],
+    "criticalWarnings": [
+      "Call 999 if it's their first seizure, lasts more than 5 minutes, or they have multiple seizures",
+      "Never put anything in their mouth during a seizure",
+      "Do not give them water or food until fully conscious"
+    ],
+    "ageGroups": ["adult", "child"],
+    "timeCritical": false
+  },
+  {
+    "conditionName": "Burns - Thermal Injury",
+    "conditionCategory": "trauma",
+    "severityLevel": "urgent",
+    "immediateAction": "Cool the burn with cool running water for at least 20 minutes",
+    "stepByStepInstructions": [
+      "Remove the person from the heat source",
+      "Cool the burn under cool running water for at least 20 minutes",
+      "Remove any clothing or jewelry near the burn unless stuck to the skin",
+      "Keep cooling while waiting for help",
+      "Cover the burn with cling film or a clean plastic bag",
+      "Do not use ice, creams, or ointments",
+      "Keep the person warm with a blanket, avoiding the burned area",
+      "Monitor their breathing and consciousness"
+    ],
+    "criticalWarnings": [
+      "Do not use ice - it can cause more damage",
+      "Do not burst any blisters",
+      "Large burns or burns to the face, hands, or genitals need urgent medical attention"
+    ],
+    "ageGroups": ["adult", "child"],
+    "timeCritical": false
+  }
+]

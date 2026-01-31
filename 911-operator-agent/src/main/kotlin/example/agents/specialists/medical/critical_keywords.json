@@ -1,0 +1,42 @@
+{
+  "keywords": {
+    "not breathing": 1,
+    "no breathing": 1,
+    "stopped breathing": 1,
+    "isn't breathing": 1,
+    "not responding": 1,
+    "unresponsive": 1,
+    "unconscious": 1,
+    "no pulse": 1,
+    "cardiac arrest": 1,
+
+    "bleeding out": 2,
+    "spurting blood": 2,
+    "severe bleeding": 2,
+    "blood everywhere": 2,
+    "can't stop bleeding" : 2,
+
+    "choking": 3,
+    "can't breathe": 3,
+    "airway blocked": 3,
+    "something stuck in throat": 3,
+
+    "chest pain": 4,
+    "heart attack": 4,
+    "crushing chest pain": 4,
+
+    "stroke": 5,
+    "face drooping": 5,
+    "can't move arm": 5,
+    "slurred speech": 5,
+
+    "seizure": 6,
+    "fitting": 6,
+    "convulsing": 6,
+
+    "anaphylaxis": 7,
+    "severe allergic reaction": 7,
+    "swelling throat": 7,
+    "can't breathe allergic": 7
+  }
+}
