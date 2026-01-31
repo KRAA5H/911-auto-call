@@ -34,6 +34,18 @@ dependencies {
     // Anthropic Claude API client (CORRECTED NAME)
     implementation("com.anthropic:anthropic-java:0.8.0")
 
+    // pgvector support for PostgreSQL
+    implementation("com.pgvector:pgvector:0.1.4")
+
+    // Anthropic Claude API client
+    implementation("com.anthropic:anthropic-sdk-java:0.1.0") // If available
+
+    // PostgreSQL driver
+    implementation("org.postgresql:postgresql:42.7.1")
+
+    // JSON parsing
+    implementation("org.json:json:20231013")
+
     // OkHttp (REQUIRED for your LocationTools class)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
