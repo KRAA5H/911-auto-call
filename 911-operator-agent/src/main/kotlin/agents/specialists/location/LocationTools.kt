@@ -5,6 +5,7 @@ import ai.koog.agents.core.tools.annotations.Tool
 import ai.koog.agents.core.tools.reflect.ToolSet
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -39,7 +40,7 @@ class LocationTools : ToolSet {
                 if (!response.isSuccessful) return "Error: GIS Service unavailable (HTTP ${response.code})."
 
                 val responseBody = response.body?.string() ?: return "Error: Empty response."
-                val jsonArray = org.json.JSONArray(responseBody)
+                val jsonArray = JSONArray(responseBody)
 
                 if (jsonArray.length() == 0) {
                     return "Invalid: Address '$query' could not be found in the database. Please verify the street name."
@@ -81,7 +82,7 @@ class LocationTools : ToolSet {
                     return "Uncertain: No official landmarks found matching '$description'. Try a street name."
                 }
 
-                val jsonArray = org.json.JSONArray(responseBody)
+                val jsonArray = JSONArray(responseBody)
                 val location = jsonArray.getJSONObject(0)
                 val name = location.getString("display_name")
 
@@ -149,7 +150,7 @@ class LocationTools : ToolSet {
         try {
             client.newCall(Request.Builder().url(geoUrl).header("User-Agent", userAgent).build()).execute()
                 .use { resp ->
-                    val jsonArr = org.json.JSONArray(resp.body!!.string())
+                    val jsonArr = JSONArray(resp.body!!.string())
                     if (jsonArr.length() == 0) return "Error: Cannot calculate ETA, incident location unknown."
                     destLat = jsonArr.getJSONObject(0).getDouble("lat")
                     destLon = jsonArr.getJSONObject(0).getDouble("lon")
