@@ -1,12 +1,12 @@
 package org.example
 
-import ai.koog.agents.core.agent.AIAgent
-import ai.koog.agents.core.tools.ToolRegistry
-import ai.koog.agents.core.tools.reflect.asTools
-import ai.koog.prompt.executor.clients.anthropic.AnthropicModels.Haiku_4_5
-import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
-import org.example.agents.location.LocationAgent
-import org.example.agents.location.LocationBridge
+// import ai.koog.agents.core.agent.AIAgent
+// import ai.koog.agents.core.tools.ToolRegistry
+// import ai.koog.agents.core.tools.reflect.asTools
+// import ai.koog.prompt.executor.clients.anthropic.AnthropicModels.Haiku_4_5
+// import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
+// import org.example.agents.location.LocationAgent
+// import org.example.agents.location.LocationBridge
 import org.example.database.DatabaseFactory
 import org.example.database.CallRepository
 import org.example.storage.FileStorage
@@ -14,8 +14,8 @@ import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 
 fun main() = runBlocking {
-    val apiKey = System.getenv("ANTHROPIC_API_KEY")
-        ?: error("❌ ANTHROPIC_API_KEY environment variable is not set.")
+    // val apiKey = System.getenv("ANTHROPIC_API_KEY")
+    //     ?: error("❌ ANTHROPIC_API_KEY environment variable is not set.")
 
     println("🚀 Starting 911 Dispatch System (Multi-Agent)...")
     
@@ -38,7 +38,11 @@ fun main() = runBlocking {
     println("✅ Test call created with ID: $testCallId")
     
     println("\n" + "=".repeat(60))
+    println("✅ Database and storage initialization complete!")
+    println("=".repeat(60))
 
+    /*
+    // Location Agent functionality temporarily disabled for testing
     // 1. Initialize the Sub-Agent (The Specialist)
     // This agent holds the actual maps and routing logic.
     val locationAgent = LocationAgent(apiKey)
@@ -73,4 +77,5 @@ fun main() = runBlocking {
     val response = supervisorAgent.run(incidentPrompt)
 
     println("\n🤖 Supervisor Final Report:\n$response")
+    */
 }
