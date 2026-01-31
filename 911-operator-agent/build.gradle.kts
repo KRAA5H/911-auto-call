@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
     application
 }
 
@@ -36,10 +36,15 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.14")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
-    // PostgreSQL & Database
-    implementation("org.postgresql:postgresql:42.7.1")
+    // SQLite Database
+    implementation("org.xerial:sqlite-jdbc:3.45.1.0")
     implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("com.pgvector:pgvector:0.1.4")
+    
+    // Exposed ORM (Kotlin-friendly database framework)
+    implementation("org.jetbrains.exposed:exposed-core:0.47.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.47.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.47.0")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.47.0")
 
     // Anthropic Claude API client (The CORRECT one)
     implementation("com.anthropic:anthropic-java:0.8.0")
@@ -60,7 +65,7 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 application {
