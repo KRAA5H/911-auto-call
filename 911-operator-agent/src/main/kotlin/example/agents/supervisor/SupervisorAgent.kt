@@ -13,7 +13,7 @@ class SupervisorAgent {
 
     // 1. Instantiate Specialists
     private val locAgent = LocationAgent(apiKey)
-//    private val medAgent = MedicalAgent(apiKey)
+    private val medAgent = MedicalAgent(apiKey)
     // private val fireAgent = FireAgent(apiKey)
 
     // 2. Create Bridges (Tools)

@@ -1,7 +1,8 @@
-package `medical-protocol-agent`
+package example.agents.specialists.medical
 
 import kotlinx.serialization.json.Json
 import java.io.File
+import kotlin.collections.iterator
 
 object KeywordMatcher {
     private val json = Json { ignoreUnknownKeys = true }

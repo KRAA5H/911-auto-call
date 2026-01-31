@@ -1,4 +1,4 @@
-package `medical-protocol-agent`
+package example.agents.specialists.medical
 
 class MedicalProtocolSubAgent(private val apiKey: String) {
 

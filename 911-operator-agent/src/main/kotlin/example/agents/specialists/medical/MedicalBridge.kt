@@ -3,7 +3,6 @@ package example.agents.specialists.medical
 import ai.koog.agents.core.tools.annotations.Tool
 import ai.koog.agents.core.tools.annotations.LLMDescription
 import ai.koog.agents.core.tools.reflect.ToolSet
-import `medical-protocol-agent`.MedicalProtocolSubAgent
 
 @LLMDescription("Interface for contacting the Medical Protocol Department.")
 class MedicalBridge(private val medicalAgent: MedicalProtocolSubAgent) : ToolSet {

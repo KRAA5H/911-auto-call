@@ -1,4 +1,4 @@
-package `medical-protocol-agent`
+package example.agents.specialists.medical
 
 import io.github.cdimascio.dotenv.dotenv
 

@@ -1,4 +1,4 @@
-package `medical-protocol-agent`
+package example.agents.specialists.medical
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -15,7 +15,7 @@ object ClaudeSelector {
         if (candidates.size == 1) return@runBlocking candidates.first()
 
         val prompt = buildSelectionPrompt(utterance, patientContext, candidates)
-        val response = ClaudeClient.generate(prompt)
+        val response = ClaudeClient.ask(prompt)
 
         // Parse the protocol ID from Claude's response
         val protocolId = parseProtocolId(response)
