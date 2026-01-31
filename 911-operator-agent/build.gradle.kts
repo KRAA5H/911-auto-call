@@ -31,6 +31,12 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.14")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
+    // PostgreSQL driver
+    implementation("org.postgresql:postgresql:42.7.1")
+
+    // HikariCP connection pool
+    implementation("com.zaxxer:HikariCP:5.1.0")
+
     // Anthropic Claude API client (CORRECTED NAME)
     implementation("com.anthropic:anthropic-java:0.8.0")
 
@@ -39,6 +45,9 @@ dependencies {
 
     // Anthropic Claude API client
     implementation("com.anthropic:anthropic-sdk-java:0.1.0") // If available
+
+    // Environment variable loading
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 
     // PostgreSQL driver
     implementation("org.postgresql:postgresql:42.7.1")
