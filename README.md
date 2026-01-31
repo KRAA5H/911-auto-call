@@ -40,7 +40,8 @@ python src/main.py
 
 ## Documentation
 
-- [AI Agents TODO List](AI_AGENTS_TODO.md)
+- [Complete Agents List](AGENTS_LIST.md) - Comprehensive list of all defined agents
+- [AI Agents TODO List](AI_AGENTS_TODO.md) - Detailed implementation tracker
 - [Feature Set](FEATURES.md)
 - [System Architecture](ARCHITECTURE.md)
 - [Folder Structure](FOLDER_STRUCTURE.md)
