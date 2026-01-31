@@ -7,19 +7,21 @@ import ai.koog.prompt.executor.clients.anthropic.AnthropicModels
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
 import example.agents.specialists.location.LocationAgent
 import example.agents.specialists.location.LocationBridge
+import example.agents.specialists.medical.MedicalBridge
+import example.agents.specialists.medical.MedicalProtocolSubAgent
 
 class SupervisorAgent {
     private val apiKey = System.getenv("ANTHROPIC_API_KEY") ?: error("Missing API Key")
 
     // 1. Instantiate Specialists
     private val locAgent = LocationAgent(apiKey)
-    private val medAgent = MedicalAgent(apiKey)
+    private val medAgent = MedicalProtocolSubAgent(apiKey)
     // private val fireAgent = FireAgent(apiKey)
 
     // 2. Create Bridges (Tools)
     private val bridges = ToolRegistry.Companion {
         tools(LocationBridge(locAgent).asTools())
-//        tools(MedicalBridge(medAgent).asTools()) // New Medical Bridge
+        tools(MedicalBridge(medAgent).asTools()) // New Medical Bridge
         // tools(FireBridge(fireAgent).asTools())
     }
 
