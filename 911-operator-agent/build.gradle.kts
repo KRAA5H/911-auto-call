@@ -31,26 +31,17 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.14")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
-    // PostgreSQL driver
-    implementation("org.postgresql:postgresql:42.7.1")
+    // Anthropic Claude API client (CORRECTED NAME)
+    implementation("com.anthropic:anthropic-java:0.8.0")
 
-    // HikariCP connection pool
-    implementation("com.zaxxer:HikariCP:5.1.0")
+    // OkHttp (REQUIRED for your LocationTools class)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-    // pgvector support for PostgreSQL
-    implementation("com.pgvector:pgvector:0.1.4")
-
-    // Anthropic Claude API client
-    implementation("com.anthropic:anthropic-sdk-java:0.1.0") // If available
-    // OR use Ktor to call Anthropic API directly (we'll do this)
-
-    // Voyage AI embeddings (we'll use Ktor for HTTP calls)
+    // JSON parsing (REQUIRED for your LocationTools class)
+    implementation("org.json:json:20231013")
 
     // Environment variable loading
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-
-    // JSON parsing
-    implementation("org.json:json:20231013")
 
     // Testing
     testImplementation(kotlin("test"))
