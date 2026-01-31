@@ -40,9 +40,7 @@ dependencies {
     // pgvector support for PostgreSQL
     implementation("com.pgvector:pgvector:0.1.4")
 
-    // Anthropic Claude API client
-    implementation("com.anthropic:anthropic-sdk-java:0.1.0") // If available
-    // OR use Ktor to call Anthropic API directly (we'll do this)
+    // Anthropic Claude API client - using Ktor to call Anthropic API directly
 
     // Voyage AI embeddings (we'll use Ktor for HTTP calls)
 
@@ -62,7 +60,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("medical-protocol-agent.MedicalAgentKt")
+    mainClass.set("org.example.MainKt")
 }
 
 tasks.test {
