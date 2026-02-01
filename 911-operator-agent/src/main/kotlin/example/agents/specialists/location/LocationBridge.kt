@@ -13,11 +13,11 @@ class LocationBridge(private val locationAgent: LocationAgent) : ToolSet {
         @LLMDescription("The full question or request regarding location (e.g. 'Verify 10 Downing St and get ETA for Unit 4')")
         request: String
     ): String {
-        println("Dispatcher is calling Location Specialist with: '$request'")
+//        println("Dispatcher is calling Location Specialist with: '$request'")
 
         val response = locationAgent.ask(request)
 
-        println("Location Specialist replied.")
+//        println("Location Specialist replied.")
         return response
     }
 }

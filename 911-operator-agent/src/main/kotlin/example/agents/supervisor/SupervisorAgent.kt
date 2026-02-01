@@ -9,6 +9,8 @@ import example.agents.specialists.location.LocationAgent
 import example.agents.specialists.location.LocationBridge
 import example.agents.specialists.medical.MedicalBridge
 import example.agents.specialists.medical.MedicalProtocolSubAgent
+import org.example.agents.police.PoliceAgent
+import example.agents.specialists.police.PoliceBridge
 
 class SupervisorAgent {
     private val apiKey = System.getenv("ANTHROPIC_API_KEY") ?: error("Missing API Key")
@@ -22,12 +24,13 @@ class SupervisorAgent {
         // If these agents extend StatefulSingleUseAIAgent, they CANNOT be class properties.
         val locAgent = LocationAgent(apiKey)
         val medAgent = MedicalProtocolSubAgent(apiKey)
-        // val fireAgent = FireAgent(apiKey)
+        val policeAgent = PoliceAgent(apiKey)
 
         // 2. Create Bridges (Tools) PER REQUEST
         val bridges = ToolRegistry.Companion {
             tools(LocationBridge(locAgent).asTools())
             tools(MedicalBridge(medAgent).asTools())
+            tools(PoliceBridge(policeAgent).asTools())
             // tools(FireBridge(fireAgent).asTools())
         }
 
@@ -42,6 +45,7 @@ class SupervisorAgent {
                 Resources:
                 - Use 'consultLocationSpecialist' for address verification and ETA.
                 - Use 'consultMedicalSpecialist' for CPR instructions or triage.
+                - Use 'consultPoliceSpecialist' for robbery, violent, criminal, or safety threats.
                 - Use 'consultFireSpecialist' for hazard assessment.
                 
                 Protocol:
