@@ -149,6 +149,9 @@ class PoliceTools : ToolSet {
  */
 class PoliceAgent(apiKey: String) {
     
+    private val emergencyExportDir = "/Users/andrewrobertson/dev/911-auto-call/911-operator-agent/to_emergency"
+    private val conversationHistory = mutableListOf<String>()
+    
     private val tools = PoliceTools()
     
     private val registry = ToolRegistry {
@@ -200,16 +203,57 @@ class PoliceAgent(apiKey: String) {
         toolRegistry = registry
     )
     
+    private fun exportEmergencyReport(callerMessage: String, response: String) {
+        val dir = java.io.File(emergencyExportDir)
+        if (!dir.exists()) {
+            dir.mkdirs()
+            println("[INFO] Created directory: $emergencyExportDir")
+        }
+        
+        try {
+            val timestamp = java.time.LocalDateTime.now()
+            val dateStr = timestamp.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
+            
+            // Extract priority for filename
+            val priority = response.substringAfter("PRIORITY=").substringBefore("|").take(10)
+            val fileName = "POLICE_${priority}_$dateStr.txt"
+            val filePath = "$emergencyExportDir/$fileName"
+            
+            val fileContent = buildString {
+                appendLine("==== POLICE EMERGENCY REPORT ====")
+                appendLine("Timestamp: $timestamp")
+                appendLine("Priority: $response")
+                appendLine("\n--- Caller Message ---")
+                appendLine(callerMessage)
+                appendLine("\n--- Conversation History ---")
+                conversationHistory.forEach { appendLine(it) }
+            }
+            
+            java.io.File(filePath).writeText(fileContent)
+            println("[INFO] Police report exported to: $filePath")
+        } catch (e: Exception) {
+            println("[ERROR] Could not export police report: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+    
     /**
      * Process an emergency call through the police agent
      */
     suspend fun handleEmergency(callerMessage: String): String {
+        conversationHistory.add("Caller: $callerMessage")
         val response = agent.run(callerMessage)
+        conversationHistory.add("System: $response")
         
         // Extract ONLY the PRIORITY line from the response
         val priorityLine = response.lines()
             .firstOrNull { it.startsWith("PRIORITY=") }
             ?: "PRIORITY=INSUFFICIENT_DATA|CONFIDENCE=0|DANGER=0"
+        
+        // Export report for high priority cases
+        if (priorityLine.contains("CRITICAL") || priorityLine.contains("HIGH")) {
+            exportEmergencyReport(callerMessage, priorityLine)
+        }
         
         return priorityLine
     }

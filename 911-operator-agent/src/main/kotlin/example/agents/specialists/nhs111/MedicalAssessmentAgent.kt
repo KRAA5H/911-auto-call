@@ -23,10 +23,12 @@ class MedicalAssessmentAgent(private val apiKey: String) {
                 println("[INFO] Created directory: $doctorExportDir")
             }
             try {
-                val timestamp = System.currentTimeMillis()
-                val safeSummary = assessment.symptomSummary.take(40).replace("[^a-zA-Z0-9]+".toRegex(), "_")
-                val fileName = "assessment_${'$'}timestamp_${'$'}safeSummary.txt"
-                val filePath = "$doctorExportDir/${'$'}fileName"
+                // Create meaningful filename: NHS_[Symptom]_YYYY-MM-DD_HH-MM-SS.txt
+                val timestamp = java.time.LocalDateTime.now()
+                val dateStr = timestamp.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
+                val safeSummary = assessment.symptomSummary.take(30).replace("[^a-zA-Z0-9]+".toRegex(), "_").trim('_')
+                val fileName = "NHS_${safeSummary}_$dateStr.txt"
+                val filePath = "$doctorExportDir/$fileName"
                 val fileContent = buildString {
                     appendLine("==== NHS 111 Medical Assessment ====")
                     appendLine("Symptom Summary: ${'$'}{assessment.symptomSummary}")
