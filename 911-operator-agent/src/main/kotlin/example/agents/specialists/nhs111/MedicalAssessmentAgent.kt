@@ -11,6 +11,27 @@ import org.json.JSONObject
  * Uses AI to assess symptoms and determine next steps
  */
 class MedicalAssessmentAgent(private val apiKey: String) {
+        private val doctorExportDir = "./to_doctor"
+
+        private fun exportAssessmentToFile(assessment: MedicalAssessment) {
+            try {
+                val timestamp = System.currentTimeMillis()
+                val safeSummary = assessment.symptomSummary.take(40).replace("[^a-zA-Z0-9]+".toRegex(), "_")
+                val fileName = "assessment_${'$'}timestamp_${'$'}safeSummary.txt"
+                val filePath = "$doctorExportDir/${'$'}fileName"
+                val fileContent = buildString {
+                    appendLine("==== NHS 111 Medical Assessment ====")
+                    appendLine("Symptom Summary: ${'$'}{assessment.symptomSummary}")
+                    appendLine("Severity: ${'$'}{assessment.severity}")
+                    appendLine("Recommendation: ${'$'}{assessment.recommendation}")
+                    appendLine("\n--- Conversation Transcript ---")
+                    assessment.conversationTranscript.forEach { appendLine(it) }
+                }
+                java.io.File(filePath).writeText(fileContent)
+            } catch (e: Exception) {
+                println("[ERROR] Could not export assessment: ${'$'}{e.message}")
+            }
+        }
     
     private var finalAssessment: MedicalAssessment? = null
     private val client = OkHttpClient()
@@ -265,14 +286,13 @@ Remember: When in doubt, escalate to a doctor. It's better to be cautious.
             "flag_as_critical" -> {
                 val symptomSummary = input.getString("symptomSummary")
                 val reason = input.getString("reason")
-                
                 finalAssessment = MedicalAssessment(
                     symptomSummary = symptomSummary,
                     severity = AssessmentSeverity.CRITICAL,
                     recommendation = "⚠️ CRITICAL: $reason - Immediate medical attention required. Call 999 or go to A&E NOW.",
                     conversationTranscript = extractConversationText()
                 )
-                
+                exportAssessmentToFile(finalAssessment!!)
                 println("\n🚨 CRITICAL CASE FLAGGED 🚨")
                 println("Reason: $reason")
                 println("Symptoms: $symptomSummary")
@@ -281,14 +301,13 @@ Remember: When in doubt, escalate to a doctor. It's better to be cautious.
                 val symptomSummary = input.getString("symptomSummary")
                 val reason = input.getString("reason")
                 val urgency = input.getString("urgency")
-                
                 finalAssessment = MedicalAssessment(
                     symptomSummary = symptomSummary,
                     severity = AssessmentSeverity.NEEDS_DOCTOR,
                     recommendation = "Doctor review needed ($urgency). Reason: $reason",
                     conversationTranscript = extractConversationText()
                 )
-                
+                exportAssessmentToFile(finalAssessment!!)
                 println("\n📋 DOCTOR HANDOFF REQUIRED")
                 println("Urgency: $urgency")
                 println("Reason: $reason")
