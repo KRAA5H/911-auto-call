@@ -26,10 +26,6 @@ class LocationAgent(apiKey: String) {
 
     // The public method the rest of the app uses to talk to this agent
     suspend fun ask(query: String): String {
-        val response = agent.run(query)
-        val writer = PrintWriter("../../TranscriptHistory.txt")
-        writer.append(response)
-        writer.close()
-        return response
+        return agent.run(query)
     }
 }

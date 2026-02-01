@@ -31,10 +31,6 @@ class SupervisorAgent {
         val policeAgent = PoliceAgent(apiKey)
         val fireAgent = FireHazmatAgent(apiKey)
 
-        val writer = PrintWriter("../TranscriptHistory.txt")
-        writer.append(transcript)
-        writer.close()
-
         // 2. Create Bridges (Tools) PER REQUEST
         val bridges = ToolRegistry.Companion {
             tools(LocationBridge(locAgent).asTools())

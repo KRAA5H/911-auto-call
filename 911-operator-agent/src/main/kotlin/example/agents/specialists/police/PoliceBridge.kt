@@ -16,9 +16,6 @@ class PoliceBridge(private val policeAgent: PoliceAgent) : ToolSet {
     ): String {
         println("Dispatcher is calling Police Specialist with: '$utterance'")
         val response = policeAgent.handleEmergency(utterance)
-        val writer = PrintWriter("../../TranscriptHistory.txt")
-        writer.append(response)
-        writer.close()
         println("Police Specialist replied.")
         return response
     }
