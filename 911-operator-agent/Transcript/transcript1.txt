@@ -1,5 +1,0 @@
-Agent: Hello, 999 which service do you need?
-Caller: Police.
-Agent: You have reached the ambulance service. Do you require an ambulance?
-Caller: Yes.
-Agent: Okay, I am transferring you to the police...
