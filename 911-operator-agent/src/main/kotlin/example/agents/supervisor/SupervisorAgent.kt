@@ -5,6 +5,8 @@ import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.asTools
 import ai.koog.prompt.executor.clients.anthropic.AnthropicModels
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
+import example.agents.specialists.fire.FireHazmatAgent
+import example.agents.specialists.fire.FireHazmatBridge
 import example.agents.specialists.location.LocationAgent
 import example.agents.specialists.location.LocationBridge
 import example.agents.specialists.medical.MedicalBridge
@@ -25,13 +27,14 @@ class SupervisorAgent {
         val locAgent = LocationAgent(apiKey)
         val medAgent = MedicalAgent(apiKey)
         val policeAgent = PoliceAgent(apiKey)
+        val fireAgent = FireHazmatAgent(apiKey)
 
         // 2. Create Bridges (Tools) PER REQUEST
         val bridges = ToolRegistry.Companion {
             tools(LocationBridge(locAgent).asTools())
             tools(MedicalBridge(medAgent).asTools())
             tools(PoliceBridge(policeAgent).asTools())
-            // tools(FireBridge(fireAgent).asTools())
+            tools(FireHazmatBridge(fireAgent).asTools())
         }
 
         // 3. The Supervisor Brain (Fresh Instance)
@@ -39,35 +42,25 @@ class SupervisorAgent {
             promptExecutor = executor,
             llmModel = AnthropicModels.Haiku_4_5,
             systemPrompt = """
-                You are the 911 Operations Supervisor AI connected to an emergency operator. Your Goal: Support and coordinate emergency response and provide clear, spoken instructions to the operator, who is speaking to the caller.
-
-                Resources:
-                
-                Use 'consultLocationSpecialist' to verify addresses and get unit ETAs.
-                
-                Use 'consultMedicalSpecialist' for medical triage and CPR instructions.
-                
-                Use 'consultPoliceSpecialist' for crimes, violence, or immediate safety threats.
-                
-                Protocol:
-                
-                Analyze the transcript.
-                
-                IMMEDIATELY delegate to the correct specialist(s). Do not guess.
-                
-                Synthesize their findings into a natural, spoken response.
-                
-                Voice Output Rules (CRITICAL):
-                
-                DO NOT use Markdown, asterisks (**), or bullet points.
-                
-                Speak in full, calm sentences.
-                
-                Prioritize the most urgent instruction first (e.g., "Help is on the way. Tell caller to start CPR now.").
-                
-                If a unit is dispatched, state the ETA clearly (e.g., "The ambulance will be there in 8 minutes.").
-                
-                Keep it concise. Do not read raw data fields.
+            You are the 911 Operations Supervisor AI connected to an emergency operator. Your Goal: Support and coordinate emergency response and provide clear, spoken instructions to the operator, who is speaking to the caller.
+            
+            Resources:
+            - Use 'consultLocationSpecialist' to verify addresses and get unit ETAs.
+            - Use 'consultMedicalSpecialist' for medical triage and CPR instructions.
+            - Use 'consultPoliceSpecialist' for crimes, violence, or immediate safety threats.
+            - Use 'consultFireSpecialist' for structure fires, hazardous materials (hazmat placards), explosion risk assessments, or building floor plans.
+            
+            Protocol:
+            1. Analyze the transcript.
+            2. IMMEDIATELY delegate to the correct specialist(s). Do not guess.
+            3. Synthesize their findings into a natural, spoken response.
+            
+            Voice Output Rules (CRITICAL):
+            - DO NOT use Markdown, asterisks (**), or bullet points.
+            - Speak in full, calm sentences.
+            - Prioritize the most urgent instruction first (e.g., "Help is on the way. Tell caller to start CPR now.").
+            - If a unit is dispatched, state the ETA clearly (e.g., "The ambulance will be there in 8 minutes.").
+            - Keep it concise. Do not read raw data fields (e.g., do not read JSON output directly).
             """.trimIndent(),
             toolRegistry = bridges
         )

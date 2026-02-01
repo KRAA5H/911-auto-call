@@ -1,0 +1,209 @@
+{
+  "hazmat_materials": {
+    "1203": {
+      "name": "Gasoline",
+      "hazard_type": "Flammable Liquid",
+      "evacuation_distance_feet": 500,
+      "un_class": "Class 3"
+    },
+    "1075": {
+      "name": "Petroleum Gas (LPG)",
+      "hazard_type": "Flammable Gas",
+      "evacuation_distance_feet": 1000,
+      "un_class": "Class 2.1"
+    },
+    "1017": {
+      "name": "Chlorine",
+      "hazard_type": "Toxic Gas",
+      "evacuation_distance_feet": 1500,
+      "un_class": "Class 2.3"
+    },
+    "1005": {
+      "name": "Ammonia",
+      "hazard_type": "Toxic Gas",
+      "evacuation_distance_feet": 800,
+      "un_class": "Class 2.3"
+    },
+    "1824": {
+      "name": "Sodium Hydroxide Solution",
+      "hazard_type": "Corrosive",
+      "evacuation_distance_feet": 300,
+      "un_class": "Class 8"
+    },
+    "1830": {
+      "name": "Sulfuric Acid",
+      "hazard_type": "Corrosive",
+      "evacuation_distance_feet": 500,
+      "un_class": "Class 8"
+    },
+    "1950": {
+      "name": "Aerosols",
+      "hazard_type": "Flammable",
+      "evacuation_distance_feet": 200,
+      "un_class": "Class 2.1"
+    },
+    "1088": {
+      "name": "Acetal",
+      "hazard_type": "Flammable Liquid",
+      "evacuation_distance_feet": 400,
+      "un_class": "Class 3"
+    },
+    "1090": {
+      "name": "Acetone",
+      "hazard_type": "Flammable Liquid",
+      "evacuation_distance_feet": 300,
+      "un_class": "Class 3"
+    },
+    "1170": {
+      "name": "Ethanol",
+      "hazard_type": "Flammable Liquid",
+      "evacuation_distance_feet": 300,
+      "un_class": "Class 3"
+    },
+    "1202": {
+      "name": "Diesel Fuel",
+      "hazard_type": "Flammable Liquid",
+      "evacuation_distance_feet": 300,
+      "un_class": "Class 3"
+    },
+    "1428": {
+      "name": "Sodium",
+      "hazard_type": "Dangerous When Wet",
+      "evacuation_distance_feet": 1000,
+      "un_class": "Class 4.3"
+    },
+    "1072": {
+      "name": "Oxygen",
+      "hazard_type": "Oxidizer",
+      "evacuation_distance_feet": 500,
+      "un_class": "Class 2.2"
+    },
+    "1263": {
+      "name": "Paint",
+      "hazard_type": "Flammable Liquid",
+      "evacuation_distance_feet": 200,
+      "un_class": "Class 3"
+    },
+    "3082": {
+      "name": "Environmentally Hazardous Substance",
+      "hazard_type": "Miscellaneous",
+      "evacuation_distance_feet": 100,
+      "un_class": "Class 9"
+    }
+  },
+  "fire_classifications": {
+    "wood": {
+      "fire_class": "Class A",
+      "extinguisher_types": "Water, Foam, Dry Chemical",
+      "warning": "Common combustibles"
+    },
+    "paper": {
+      "fire_class": "Class A",
+      "extinguisher_types": "Water, Foam, Dry Chemical",
+      "warning": "Common combustibles"
+    },
+    "cloth": {
+      "fire_class": "Class A",
+      "extinguisher_types": "Water, Foam, Dry Chemical",
+      "warning": "Common combustibles"
+    },
+    "gasoline": {
+      "fire_class": "Class B",
+      "extinguisher_types": "Foam, CO2, Dry Chemical",
+      "warning": "Flammable liquids - DO NOT use water"
+    },
+    "grease": {
+      "fire_class": "Class K",
+      "extinguisher_types": "Wet Chemical",
+      "warning": "Kitchen fires - DO NOT use water"
+    },
+    "oil": {
+      "fire_class": "Class B",
+      "extinguisher_types": "Foam, CO2, Dry Chemical",
+      "warning": "Flammable liquids - DO NOT use water"
+    },
+    "electrical": {
+      "fire_class": "Class C",
+      "extinguisher_types": "CO2, Dry Chemical",
+      "warning": "Energized electrical - DO NOT use water"
+    },
+    "wiring": {
+      "fire_class": "Class C",
+      "extinguisher_types": "CO2, Dry Chemical",
+      "warning": "Energized electrical - DO NOT use water"
+    },
+    "metal": {
+      "fire_class": "Class D",
+      "extinguisher_types": "Dry Powder (Special)",
+      "warning": "Combustible metals - specialized agent required"
+    },
+    "magnesium": {
+      "fire_class": "Class D",
+      "extinguisher_types": "Dry Powder (Special)",
+      "warning": "Combustible metals - specialized agent required"
+    },
+    "lithium": {
+      "fire_class": "Class D",
+      "extinguisher_types": "Dry Powder (Special)",
+      "warning": "Combustible metals - specialized agent required"
+    },
+    "propane": {
+      "fire_class": "Class B",
+      "extinguisher_types": "Foam, CO2, Dry Chemical",
+      "warning": "Flammable gas - shut off source if safe"
+    },
+    "natural gas": {
+      "fire_class": "Class B",
+      "extinguisher_types": "CO2, Dry Chemical",
+      "warning": "Flammable gas - shut off source if safe"
+    },
+    "plastic": {
+      "fire_class": "Class A",
+      "extinguisher_types": "Water, Foam, Dry Chemical",
+      "warning": "Synthetic materials - toxic smoke"
+    },
+    "rubber": {
+      "fire_class": "Class A",
+      "extinguisher_types": "Water, Foam, Dry Chemical",
+      "warning": "Synthetic materials - toxic smoke"
+    }
+  },
+  "building_schematics": {
+    "city hospital": {
+      "floors": "3 floors",
+      "main_exit": "North lobby (Main)",
+      "fire_escapes": "East stairwell, West stairwell",
+      "hazardous_areas": "Basement (boiler room)"
+    },
+    "metro mall": {
+      "floors": "2 floors + parking",
+      "main_exit": "East/West entrances",
+      "fire_escapes": "4 corner stairwells",
+      "hazardous_areas": "Food court (gas lines)"
+    },
+    "oak street school": {
+      "floors": "2 floors",
+      "main_exit": "South main entrance",
+      "fire_escapes": "North/South fire escapes",
+      "hazardous_areas": "None"
+    },
+    "downtown office tower": {
+      "floors": "15 floors",
+      "main_exit": "Main lobby (South)",
+      "fire_escapes": "Stairwell A (East), Stairwell B (West)",
+      "hazardous_areas": "Mechanical room (Floor 10)"
+    },
+    "riverside apartments": {
+      "floors": "5 floors",
+      "main_exit": "Front entrance (North)",
+      "fire_escapes": "Central stairwell",
+      "hazardous_areas": "Basement utilities"
+    },
+    "greenfield warehouse": {
+      "floors": "Single floor (high ceiling)",
+      "main_exit": "Loading dock (West), Office entrance (East)",
+      "fire_escapes": "Emergency exits: 4 sides",
+      "hazardous_areas": "Hazmat storage (Northwest corner)"
+    }
+  }
+}
