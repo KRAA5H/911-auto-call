@@ -1,4 +1,4 @@
-package org.example.agents.location
+package example.agents.specialists.location
 
 import ai.koog.agents.core.tools.annotations.Tool
 import ai.koog.agents.core.tools.annotations.LLMDescription
