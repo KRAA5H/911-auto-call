@@ -18,6 +18,8 @@ class LocationBridge(private val locationAgent: LocationAgent) : ToolSet {
         val response = locationAgent.ask(request)
 
         println("Location Specialist replied.")
+        println("_------------------------------_")
+        println("Response: $response")
         return response
     }
 }
