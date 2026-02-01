@@ -220,6 +220,7 @@ Remember: When in doubt, escalate to a doctor. It's better to be cautious.
     suspend fun processMessage(message: String): String {
         // Increment question count for each user message
         questionCount++
+        println("[NHS DEBUG] Question count: $questionCount / $MAX_QUESTIONS")
         
         // Check if we've exceeded the question limit
         if (questionCount > MAX_QUESTIONS && finalAssessment == null) {

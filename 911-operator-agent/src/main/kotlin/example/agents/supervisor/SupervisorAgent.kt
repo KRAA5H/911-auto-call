@@ -22,23 +22,38 @@ class SupervisorAgent {
     // Keep the executor static/shared if it's just an HTTP client wrapper to save resources.
     // If it holds state, move it inside handleRequest too.
     private val executor = simpleAnthropicExecutor(apiKey)
+    
+    // Store agents per conversation to maintain state
+    private val conversationAgents = mutableMapOf<String, ConversationAgents>()
+    
+    data class ConversationAgents(
+        val locAgent: LocationAgent,
+        val medAgent: MedicalAgent,
+        val policeAgent: PoliceAgent,
+        val fireAgent: FireHazmatAgent,
+        val nhsAgent: MedicalAssessmentAgent
+    )
 
-    suspend fun handleRequest(transcript: String): String {
-        // 1. Instantiate Specialists PER REQUEST
-        // If these agents extend StatefulSingleUseAIAgent, they CANNOT be class properties.
-        val locAgent = LocationAgent(apiKey)
-        val medAgent = MedicalAgent(apiKey)
-        val policeAgent = PoliceAgent(apiKey)
-        val fireAgent = FireHazmatAgent(apiKey)
-        val nhsAgent = MedicalAssessmentAgent(apiKey)
+    suspend fun handleRequest(transcript: String, conversationId: String = "default"): String {ionId: String = "default"): String {
+        // Get or create agents for this conversation
+        val agents = conversationAgents.getOrPut(conversationId) {
+            println("[INFO] Creating new agent set for conversation: $conversationId")
+            ConversationAgents(
+                locAgent = LocationAgent(apiKey),
+                medAgent = MedicalAgent(apiKey),
+                policeAgent = PoliceAgent(apiKey),
+                fireAgent = FireHazmatAgent(apiKey),
+                nhsAgent = MedicalAssessmentAgent(apiKey)
+            )
+        }
 
-        // 2. Create Bridges (Tools) PER REQUEST
+        // 2. Create Bridges (Tools) using persistent agents
         val bridges = ToolRegistry.Companion {
-            tools(LocationBridge(locAgent).asTools())
-            tools(MedicalBridge(medAgent).asTools())
-            tools(PoliceBridge(policeAgent).asTools())
-            tools(FireHazmatBridge(fireAgent).asTools())
-            tools(NHSBridge(nhsAgent).asTools())
+            tools(LocationBridge(agents.locAgent).asTools())
+            tools(MedicalBridge(agents.medAgent).asTools())
+            tools(PoliceBridge(agents.policeAgent).asTools())
+            tools(FireHazmatBridge(agents.fireAgent).asTools())
+            tools(NHSBridge(agents.nhsAgent).asTools())
         }
 
         // 3. The Supervisor Brain (Fresh Instance)
