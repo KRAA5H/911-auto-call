@@ -5,6 +5,7 @@ import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.asTools
 import ai.koog.prompt.executor.clients.anthropic.AnthropicModels.Haiku_4_5
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
+import java.io.PrintWriter
 
 class LocationAgent(apiKey: String) {
 
@@ -25,6 +26,10 @@ class LocationAgent(apiKey: String) {
 
     // The public method the rest of the app uses to talk to this agent
     suspend fun ask(query: String): String {
-        return agent.run(query)
+        val response = agent.run(query)
+        val writer = PrintWriter("../../TranscriptHistory.txt")
+        writer.append(response)
+        writer.close()
+        return response
     }
 }

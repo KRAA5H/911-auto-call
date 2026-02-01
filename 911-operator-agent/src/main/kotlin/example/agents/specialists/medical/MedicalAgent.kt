@@ -5,6 +5,7 @@ import ai.koog.prompt.executor.clients.anthropic.AnthropicModels
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import java.io.PrintWriter
 
 class MedicalAgent(private val apiKey: String) {
 
@@ -71,6 +72,9 @@ class MedicalAgent(private val apiKey: String) {
 
         val prompt = buildSelectionPrompt(utterance, patientContext, candidates)
         val response = agent.run(prompt)
+        val writer = PrintWriter("../../TranscriptHistory.txt")
+        writer.append(response)
+        writer.close()
 
         // Parse the protocol ID from Claude's response
         val protocolId = parseProtocolId(response)

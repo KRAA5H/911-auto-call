@@ -13,6 +13,8 @@ import example.agents.specialists.medical.MedicalBridge
 import example.agents.specialists.medical.MedicalAgent
 import org.example.agents.police.PoliceAgent
 import example.agents.specialists.police.PoliceBridge
+import java.io.File
+import java.io.PrintWriter
 
 class SupervisorAgent {
     private val apiKey = System.getenv("ANTHROPIC_API_KEY") ?: error("Missing API Key")
@@ -28,6 +30,10 @@ class SupervisorAgent {
         val medAgent = MedicalAgent(apiKey)
         val policeAgent = PoliceAgent(apiKey)
         val fireAgent = FireHazmatAgent(apiKey)
+
+        val writer = PrintWriter("../TranscriptHistory.txt")
+        writer.append(transcript)
+        writer.close()
 
         // 2. Create Bridges (Tools) PER REQUEST
         val bridges = ToolRegistry.Companion {
