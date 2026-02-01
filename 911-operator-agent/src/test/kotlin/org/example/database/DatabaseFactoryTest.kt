@@ -1,5 +1,9 @@
 package org.example.database
 
+import database.CallRepository
+import database.DatabaseFactory
+import database.EntityRepository
+import database.TranscriptRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 

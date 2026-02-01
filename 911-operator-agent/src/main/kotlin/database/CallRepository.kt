@@ -1,38 +1,18 @@
-package org.example.database
+package database
+
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
-
-/**
- * Data class representing a call record.
- */
-@Serializable
-data class CallRecordData(
-    val callId: String,
-    val callSid: String? = null,
-    val callerPhone: String? = null,
-    val startTime: String, // ISO-8601 format
-    val endTime: String? = null,
-    val duration: Int? = null,
-    val status: String,
-    val emergencyType: String? = null,
-    val location: String? = null,
-    val coordinates: String? = null,
-    val severity: Int? = null,
-    val dispatchStatus: String? = null,
-    val audioFileUrl: String? = null,
-    val transcriptFileUrl: String? = null,
-    val metadata: String? = null
-)
 
 /**
  * Repository for managing call records in the database.
  * Provides CRUD operations for emergency call data.
  */
 object CallRepository {
-    
+
     /**
      * Create a new call record in the database.
      */
@@ -48,7 +28,7 @@ object CallRepository {
         }
         callId
     }
-    
+
     /**
      * Update an existing call record.
      */
@@ -84,14 +64,14 @@ object CallRepository {
             metadata?.let { value -> it[CallRecords.metadata] = value }
         }
     }
-    
+
     /**
      * Get a call record by ID.
      */
     fun getCall(callId: String): ResultRow? = transaction {
-        CallRecords.select { CallRecords.callId eq callId }.firstOrNull()
+        CallRecords.selectAll().where { CallRecords.callId eq callId }.firstOrNull()
     }
-    
+
     /**
      * Get all call records.
      */
@@ -104,7 +84,7 @@ object CallRepository {
  * Repository for managing transcripts in the database.
  */
 object TranscriptRepository {
-    
+
     /**
      * Add a transcript segment to the database.
      */
@@ -125,12 +105,12 @@ object TranscriptRepository {
             it[Transcripts.sentiment] = sentiment
         } get Transcripts.id
     }
-    
+
     /**
      * Get all transcript segments for a call.
      */
     fun getTranscripts(callId: String): List<ResultRow> = transaction {
-        Transcripts.select { Transcripts.callId eq callId }
+        Transcripts.selectAll().where { Transcripts.callId eq callId }
             .orderBy(Transcripts.timestamp)
             .toList()
     }
@@ -140,7 +120,7 @@ object TranscriptRepository {
  * Repository for managing extracted entities.
  */
 object EntityRepository {
-    
+
     /**
      * Add an extracted entity to the database.
      */
@@ -159,20 +139,19 @@ object EntityRepository {
             it[ExtractedEntities.extractedAt] = extractedAt
         } get ExtractedEntities.id
     }
-    
+
     /**
      * Get all entities for a call.
      */
     fun getEntities(callId: String): List<ResultRow> = transaction {
-        ExtractedEntities.select { ExtractedEntities.callId eq callId }.toList()
+        ExtractedEntities.selectAll().where { ExtractedEntities.callId eq callId }.toList()
     }
-    
+
     /**
      * Get entities by type for a call.
      */
     fun getEntitiesByType(callId: String, entityType: String): List<ResultRow> = transaction {
-        ExtractedEntities.select { 
-            (ExtractedEntities.callId eq callId) and (ExtractedEntities.entityType eq entityType)
-        }.toList()
+        ExtractedEntities.selectAll()
+            .where { (ExtractedEntities.callId eq callId) and (ExtractedEntities.entityType eq entityType) }.toList()
     }
 }

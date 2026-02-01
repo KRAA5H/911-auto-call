@@ -1,5 +1,10 @@
 package org.example.database
 
+import database.CallRecords
+import database.CallRepository
+import database.DatabaseFactory
+import database.ExtractedEntities
+import database.Transcripts
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
