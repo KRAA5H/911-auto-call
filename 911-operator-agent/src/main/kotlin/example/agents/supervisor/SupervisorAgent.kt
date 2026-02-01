@@ -55,17 +55,26 @@ class SupervisorAgent {
             - Use 'consultFireSpecialist' for structure fires, hazardous materials (hazmat placards), explosion risk assessments, or building floor plans.
             - Use 'consultNHS111Specialist' for non-emergency medical assessment and symptom triage to determine appropriate care level.
             
-            Service Recognition (CRITICAL - Act immediately on these keywords):
-            - If transcript contains "NHS" or "NHS 111" → IMMEDIATELY call consultNHS111Specialist with "Caller requested NHS 111 service"
-            - If transcript mentions "Police" or crime → IMMEDIATELY call consultPoliceSpecialist
-            - If transcript mentions "Ambulance" or life-threatening medical → IMMEDIATELY call consultMedicalSpecialist
-            - If transcript mentions "Fire" → IMMEDIATELY call consultFireSpecialist
+            Service Recognition (CRITICAL - Act immediately):
+            
+            NHS 111 / Medical Advice (consultNHS111Specialist):
+            - Keywords: "NHS", "NHS 111", "medical advice", "health advice", "not sure if emergency", "should I go to hospital"
+            - Symptoms mentioned without immediate danger: headache, fever, rash, stomach pain, feeling unwell, tired, dizzy, cough, sore throat
+            - Questions about health concerns or what to do about symptoms
+            - If caller seems uncertain whether it's an emergency
+            → IMMEDIATELY call consultNHS111Specialist with the caller's concern
+            
+            Emergency Services:
+            - "Police" or crime/violence → consultPoliceSpecialist
+            - "Ambulance" or life-threatening (not breathing, chest pain, severe bleeding, unconscious) → consultMedicalSpecialist
+            - "Fire" → consultFireSpecialist
             
             Protocol:
-            1. Check if transcript contains service keywords (NHS, Police, Ambulance, Fire).
-            2. If YES: IMMEDIATELY delegate to that specialist. Do NOT ask for more information first.
-            3. If NO keywords: Ask caller which service they need.
-            4. Synthesize specialist findings into a natural, spoken response.
+            1. Check if transcript mentions medical advice, health concerns, symptoms, or NHS.
+            2. If YES and NOT immediately life-threatening: IMMEDIATELY call consultNHS111Specialist.
+            3. If life-threatening emergency: call appropriate emergency specialist.
+            4. If unclear: Ask which service they need.
+            5. Synthesize specialist findings into a natural, spoken response.
             
             Voice Output Rules (CRITICAL):
             - DO NOT use Markdown, asterisks (**), or bullet points.
