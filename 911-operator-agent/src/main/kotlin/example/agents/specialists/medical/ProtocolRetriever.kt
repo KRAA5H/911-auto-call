@@ -9,31 +9,31 @@ object ProtocolRetriever {
         val startTime = System.currentTimeMillis()
 
         // ============ STAGE 1: KEYWORD MATCHING ============
-        println("Stage 1: Checking critical keywords...")
+//        println("Stage 1: Checking critical keywords...")
         val keywordProtocolId = KeywordMatcher.findProtocolId(utterance)
 
         if (keywordProtocolId != null) {
             val protocol = ProtocolRepository.getProtocolById(keywordProtocolId)
             val elapsed = System.currentTimeMillis() - startTime
-            println("✓ Stage 1 HIT: Found protocol in ${elapsed}ms")
+//            println("✓ Stage 1 HIT: Found protocol in ${elapsed}ms")
             return protocol
         }
 
-        println("Stage 1 MISS: No critical keyword match")
+//        println("Stage 1 MISS: No critical keyword match")
 
         // ============ STAGE 2: CLAUDE SELECTION ============
-        println("Stage 2: Querying database for candidates...")
+//        println("Stage 2: Querying database for candidates...")
         val candidates = ProtocolRepository.getCandidateProtocols(
             ageGroup = patientContext.ageGroup,
             limit = Config.MAX_PROTOCOLS_FOR_SELECTION
         )
 
         if (candidates.isEmpty()) {
-            println("✗ Stage 2 MISS: No candidate protocols found")
+//            println("✗ Stage 2 MISS: No candidate protocols found")
             return null
         }
 
-        println("Stage 2: Found ${candidates.size} candidates, asking Claude...")
+//        println("Stage 2: Found ${candidates.size} candidates, asking Claude...")
         val selectedProtocol = ClaudeSelector.selectBestProtocol(
             utterance = utterance,
             patientContext = patientContext,
@@ -42,9 +42,9 @@ object ProtocolRetriever {
 
         val elapsed = System.currentTimeMillis() - startTime
         if (selectedProtocol != null) {
-            println("✓ Stage 2 HIT: Found protocol in ${elapsed}ms")
+//            println("✓ Stage 2 HIT: Found protocol in ${elapsed}ms")
         } else {
-            println("✗ Stage 2 MISS: Claude couldn't select a protocol")
+//            println("✗ Stage 2 MISS: Claude couldn't select a protocol")
         }
 
         return selectedProtocol

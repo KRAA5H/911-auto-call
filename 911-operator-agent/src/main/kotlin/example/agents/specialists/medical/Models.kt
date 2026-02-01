@@ -59,11 +59,3 @@ data class ClaudeSelectionResponse(
     val protocolId: Int,
     val reasoning: String
 )
-
-@Serializable
-data class ClaudeGenerationResponse(
-    val immediateInstruction: String,
-    val stepByStep: List<String>,
-    val criticalPoints: List<String>,
-    val reassurance: String
-)
