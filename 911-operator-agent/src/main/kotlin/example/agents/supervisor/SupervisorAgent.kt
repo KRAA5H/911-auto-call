@@ -11,6 +11,8 @@ import example.agents.specialists.location.LocationAgent
 import example.agents.specialists.location.LocationBridge
 import example.agents.specialists.medical.MedicalBridge
 import example.agents.specialists.medical.MedicalAgent
+import example.agents.specialists.nhs111.MedicalAssessmentAgent
+import example.agents.specialists.nhs111.NHSBridge
 import org.example.agents.police.PoliceAgent
 import example.agents.specialists.police.PoliceBridge
 
@@ -28,6 +30,7 @@ class SupervisorAgent {
         val medAgent = MedicalAgent(apiKey)
         val policeAgent = PoliceAgent(apiKey)
         val fireAgent = FireHazmatAgent(apiKey)
+        val nhsAgent = MedicalAssessmentAgent(apiKey)
 
         // 2. Create Bridges (Tools) PER REQUEST
         val bridges = ToolRegistry.Companion {
@@ -35,6 +38,7 @@ class SupervisorAgent {
             tools(MedicalBridge(medAgent).asTools())
             tools(PoliceBridge(policeAgent).asTools())
             tools(FireHazmatBridge(fireAgent).asTools())
+            tools(NHSBridge(nhsAgent).asTools())
         }
 
         // 3. The Supervisor Brain (Fresh Instance)
@@ -49,11 +53,19 @@ class SupervisorAgent {
             - Use 'consultMedicalSpecialist' for medical triage and CPR instructions.
             - Use 'consultPoliceSpecialist' for crimes, violence, or immediate safety threats.
             - Use 'consultFireSpecialist' for structure fires, hazardous materials (hazmat placards), explosion risk assessments, or building floor plans.
+            - Use 'consultNHS111Specialist' for non-emergency medical assessment and symptom triage to determine appropriate care level.
+            
+            Service Recognition (CRITICAL - Act immediately on these keywords):
+            - If transcript contains "NHS" or "NHS 111" → IMMEDIATELY call consultNHS111Specialist with "Caller requested NHS 111 service"
+            - If transcript mentions "Police" or crime → IMMEDIATELY call consultPoliceSpecialist
+            - If transcript mentions "Ambulance" or life-threatening medical → IMMEDIATELY call consultMedicalSpecialist
+            - If transcript mentions "Fire" → IMMEDIATELY call consultFireSpecialist
             
             Protocol:
-            1. Analyze the transcript.
-            2. IMMEDIATELY delegate to the correct specialist(s). Do not guess.
-            3. Synthesize their findings into a natural, spoken response.
+            1. Check if transcript contains service keywords (NHS, Police, Ambulance, Fire).
+            2. If YES: IMMEDIATELY delegate to that specialist. Do NOT ask for more information first.
+            3. If NO keywords: Ask caller which service they need.
+            4. Synthesize specialist findings into a natural, spoken response.
             
             Voice Output Rules (CRITICAL):
             - DO NOT use Markdown, asterisks (**), or bullet points.
