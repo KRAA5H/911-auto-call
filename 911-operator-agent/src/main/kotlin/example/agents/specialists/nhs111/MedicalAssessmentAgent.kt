@@ -11,9 +11,17 @@ import org.json.JSONObject
  * Uses AI to assess symptoms and determine next steps
  */
 class MedicalAssessmentAgent(private val apiKey: String) {
-        private val doctorExportDir = "./to_doctor"
+        private val doctorExportDir = "/Users/andrewrobertson/dev/911-auto-call/to_doctor"
+        private var questionCount = 0
+        private val MAX_QUESTIONS = 5
 
         private fun exportAssessmentToFile(assessment: MedicalAssessment) {
+            // Ensure directory exists
+            val dir = java.io.File(doctorExportDir)
+            if (!dir.exists()) {
+                dir.mkdirs()
+                println("[INFO] Created directory: $doctorExportDir")
+            }
             try {
                 val timestamp = System.currentTimeMillis()
                 val safeSummary = assessment.symptomSummary.take(40).replace("[^a-zA-Z0-9]+".toRegex(), "_")
@@ -28,8 +36,10 @@ class MedicalAssessmentAgent(private val apiKey: String) {
                     assessment.conversationTranscript.forEach { appendLine(it) }
                 }
                 java.io.File(filePath).writeText(fileContent)
+                println("[INFO] Assessment exported to: $filePath")
             } catch (e: Exception) {
                 println("[ERROR] Could not export assessment: ${'$'}{e.message}")
+                e.printStackTrace()
             }
         }
     
@@ -50,6 +60,7 @@ CRITICAL RULES:
    - NEVER ask multiple questions in one response
    - Keep questions short and conversational
    - Gather information about: what the problem is, how severe, how long, any red flags
+   - ⚠️ MAXIMUM 5 QUESTIONS - After 5 questions, you MUST classify the case (usually with needs_doctor())
 
 2. After gathering enough information, you MUST classify using ONE of these tools:
 
@@ -87,6 +98,11 @@ CRITICAL RULES:
 3. Be conversational but efficient. Ask ONE question at a time - NEVER list multiple questions.
 
 4. If they mention ANYTHING serious, flag it immediately - don't keep asking questions.
+
+5. ⚠️ QUESTION LIMIT: After 5 questions, you MUST make a classification decision:
+   - If unsure, DEFAULT to needs_doctor() - better to escalate than keep asking
+   - Don't wait for perfect information - make the best decision with what you have
+   - Never continue indefinitely - 5 questions is the absolute maximum
 
 CRITICAL: Always ask ONLY ONE QUESTION per response. Do NOT create bulleted lists of questions.
 
@@ -202,6 +218,23 @@ Remember: When in doubt, escalate to a doctor. It's better to be cautious.
      * Process a message from the caller
      */
     suspend fun processMessage(message: String): String {
+        // Increment question count for each user message
+        questionCount++
+        
+        // Check if we've exceeded the question limit
+        if (questionCount > MAX_QUESTIONS && finalAssessment == null) {
+            // Automatically escalate to doctor
+            finalAssessment = MedicalAssessment(
+                symptomSummary = "Unable to fully assess after $MAX_QUESTIONS questions",
+                severity = AssessmentSeverity.NEEDS_DOCTOR,
+                recommendation = "Doctor review needed (within 24 hours). Reason: Assessment requires professional medical evaluation after initial triage.",
+                conversationTranscript = extractConversationText()
+            )
+            exportAssessmentToFile(finalAssessment!!)
+            println("\n⚠️ AUTO-ESCALATION: Reached question limit ($MAX_QUESTIONS)")
+            return "I think it's best if you speak to a doctor about this. I've collected the information and will pass it along for a professional medical review."
+        }
+        
         // Add user message to history
         conversationHistory.add(JSONObject().apply {
             put("role", "user")
