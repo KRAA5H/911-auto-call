@@ -40,7 +40,7 @@ fun Application.configureElevenLabsRoutes() {
 
                 val response = supervisor.handleRequest(request.transcript)
 
-                println("🤖 Agent Response: '$response.take(20)'") // Debug log 3
+                println("🤖 Agent Response: '$response'") // Debug log 3
 
                 call.respondText(response)
             } catch (e: Exception) {

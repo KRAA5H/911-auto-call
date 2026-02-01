@@ -5,7 +5,7 @@ import ai.koog.agents.core.tools.annotations.LLMDescription
 import ai.koog.agents.core.tools.reflect.ToolSet
 
 @LLMDescription("Interface for contacting the Medical Protocol Department.")
-class MedicalBridge(private val medicalAgent: MedicalProtocolSubAgent) : ToolSet {
+class MedicalBridge(private val medicalAgent: MedicalAgent) : ToolSet {
 
     @Tool
     @LLMDescription("Delegates a medical emergency question to the Medical Specialist. Use this for ANY medical emergency guidance, first aid instructions, or protocol advice.")

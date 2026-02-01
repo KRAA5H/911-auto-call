@@ -8,7 +8,7 @@ import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
 import example.agents.specialists.location.LocationAgent
 import example.agents.specialists.location.LocationBridge
 import example.agents.specialists.medical.MedicalBridge
-import example.agents.specialists.medical.MedicalProtocolSubAgent
+import example.agents.specialists.medical.MedicalAgent
 import org.example.agents.police.PoliceAgent
 import example.agents.specialists.police.PoliceBridge
 
@@ -23,7 +23,7 @@ class SupervisorAgent {
         // 1. Instantiate Specialists PER REQUEST
         // If these agents extend StatefulSingleUseAIAgent, they CANNOT be class properties.
         val locAgent = LocationAgent(apiKey)
-        val medAgent = MedicalProtocolSubAgent(apiKey)
+        val medAgent = MedicalAgent(apiKey)
         val policeAgent = PoliceAgent(apiKey)
 
         // 2. Create Bridges (Tools) PER REQUEST
@@ -39,19 +39,35 @@ class SupervisorAgent {
             promptExecutor = executor,
             llmModel = AnthropicModels.Haiku_4_5,
             systemPrompt = """
-                You are the 911 Operations Supervisor.
-                Your Goal: Coordinate the response to an emergency call.
-                
+                You are the 911 Operations Supervisor AI connected to an emergency operator. Your Goal: Support and coordinate emergency response and provide clear, spoken instructions to the operator, who is speaking to the caller.
+
                 Resources:
-                - Use 'consultLocationSpecialist' for address verification and ETA.
-                - Use 'consultMedicalSpecialist' for CPR instructions or triage.
-                - Use 'consultPoliceSpecialist' for robbery, violent, criminal, or safety threats.
-                - Use 'consultFireSpecialist' for hazard assessment.
+                
+                Use 'consultLocationSpecialist' to verify addresses and get unit ETAs.
+                
+                Use 'consultMedicalSpecialist' for medical triage and CPR instructions.
+                
+                Use 'consultPoliceSpecialist' for crimes, violence, or immediate safety threats.
                 
                 Protocol:
-                1. Analyze the incoming transcript.
-                2. Delegate tasks to the appropriate specialist tools immediately.
-                3. Synthesize their technical responses into a clear, spoken response for the caller.
+                
+                Analyze the transcript.
+                
+                IMMEDIATELY delegate to the correct specialist(s). Do not guess.
+                
+                Synthesize their findings into a natural, spoken response.
+                
+                Voice Output Rules (CRITICAL):
+                
+                DO NOT use Markdown, asterisks (**), or bullet points.
+                
+                Speak in full, calm sentences.
+                
+                Prioritize the most urgent instruction first (e.g., "Help is on the way. Tell caller to start CPR now.").
+                
+                If a unit is dispatched, state the ETA clearly (e.g., "The ambulance will be there in 8 minutes.").
+                
+                Keep it concise. Do not read raw data fields.
             """.trimIndent(),
             toolRegistry = bridges
         )
