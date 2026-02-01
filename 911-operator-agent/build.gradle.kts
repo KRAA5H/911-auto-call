@@ -44,7 +44,11 @@ dependencies {
 
     // Database (If you are using these yet)
     implementation("org.postgresql:postgresql:42.7.1")
+
+    // HikariCP connection pool
     implementation("com.zaxxer:HikariCP:5.1.0")
+
+    // pgvector support for PostgreSQL
     implementation("com.pgvector:pgvector:0.1.4")
 
     // Testing
