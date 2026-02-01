@@ -11,7 +11,7 @@ import org.json.JSONObject
  * Uses AI to assess symptoms and determine next steps
  */
 class MedicalAssessmentAgent(private val apiKey: String) {
-        private val doctorExportDir = "/Users/andrewrobertson/dev/911-auto-call/to_doctor"
+        private val doctorExportDir = "/Users/andrewrobertson/dev/911-auto-call/911-operator-agent/to_doctor"
         private var questionCount = 0
         private val MAX_QUESTIONS = 5
 
