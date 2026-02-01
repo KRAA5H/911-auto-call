@@ -34,7 +34,7 @@ class SupervisorAgent {
         val nhsAgent: MedicalAssessmentAgent
     )
 
-    suspend fun handleRequest(transcript: String, conversationId: String = "default"): String {ionId: String = "default"): String {
+    suspend fun handleRequest(transcript: String, conversationId: String = "default"): String {
         // Get or create agents for this conversation
         val agents = conversationAgents.getOrPut(conversationId) {
             println("[INFO] Creating new agent set for conversation: $conversationId")
