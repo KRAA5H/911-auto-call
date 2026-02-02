@@ -14,7 +14,7 @@ Overhaul the entire emergency call system to ensure every emergency call is answ
 2. **Autonomous Response**: AI agents handle complete call flow from intake to dispatch
 3. **Scalability**: Handle unlimited concurrent calls
 4. **Training**: Leverage NHS ambulance call dataset for realistic training
-5. **48-Hour MVP**: Build functional prototype in 48 hours
+5. **48-Hour MVP**: Build functional prototype in 24 hours
 
 ## Technology Stack
 
@@ -24,19 +24,6 @@ Overhaul the entire emergency call system to ensure every emergency call is answ
 - **Database**: PostgreSQL
 - **Infrastructure**: Cloud-based (AWS/GCP)
 - **Telephony**: Twilio/Vonage
-
-## Quick Start
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env
-
-# Run development server
-python src/main.py
-```
 
 ## Documentation
 
