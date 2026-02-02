@@ -18,7 +18,7 @@ class LocationTools : ToolSet {
     private val w3wApiKey = System.getenv("W3W_API_KEY")
         ?: error("W3W_API_KEY environment variable is not set. Please set it first.")
 
-    private val userAgent = "KoogAgent/1.0" // Required by Nominatim
+    private val userAgent = "KoogAgent/1.0"
 
     @Tool
     @LLMDescription("Validates a spoken address against a GIS database to ensure it exists.")
@@ -63,9 +63,8 @@ class LocationTools : ToolSet {
     fun reverseGeocodeLandmarks(
         @LLMDescription("Visual description (e.g., 'Near the big blue water tower')") description: String
     ): String {
-        // BLUNT NOTE: Standard Geocoders fail at this. This implementation treats the description
-        // as a broad POI search, which is the best a standard API can do.
-        // For real landmark recognition, you need a vector database, not a geocoder.
+        // This implementation treats the description
+        // as a broad POI search.
 
         val encodedQuery = URLEncoder.encode(description, StandardCharsets.UTF_8.toString())
         val url = "https://nominatim.openstreetmap.org/search?q=$encodedQuery&format=json&limit=1"
@@ -133,9 +132,9 @@ class LocationTools : ToolSet {
         @LLMDescription("The confirmed incident location") incidentLocation: String,
         @LLMDescription("The ID of the unit being dispatched (optional)") unitId: String? = "Auto-Assign"
     ): String {
-        // To make this "Real", we must geocode the incident location first,
+        //To make this "Real", we must geocode the incident location first,
         // then route from a HYPOTHETICAL unit location (since we don't have a real unit database here).
-        // We will assume Unit 4 is at a fixed depot for this implementation to actually run.
+        //We will assume Unit 4 is at a fixed depot for this implementation to actually run.
 
         val unitLat = 51.5007 // Mock Unit Location (London)
         val unitLon = -0.1246
@@ -159,7 +158,6 @@ class LocationTools : ToolSet {
             return "Error: Geocoding failed for ETA."
         }
 
-        // 2. OSRM Routing (Car profile)
         val routeUrl =
             "http://router.project-osrm.org/route/v1/driving/$unitLon,$unitLat;$destLon,$destLat?overview=false"
 

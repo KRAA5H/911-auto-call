@@ -13,7 +13,7 @@ import org.json.JSONObject
 class MedicalAssessmentAgent(private val apiKey: String) {
         private val doctorExportDir = "/Users/andrewrobertson/dev/911-auto-call/911-operator-agent/to_doctor"
         private var questionCount = 0
-        private val MAX_QUESTIONS = 5
+        private val MAX_QUESTIONS = 3
 
         private fun exportAssessmentToFile(assessment: MedicalAssessment) {
             // Ensure directory exists
@@ -50,9 +50,7 @@ class MedicalAssessmentAgent(private val apiKey: String) {
     private val systemPrompt = """
 You are an NHS 111 medical triage AI. Your job is to assess symptoms and decide on the appropriate action.
 
-═══════════════════════════════════════════════════════════════════════════════════
 CRITICAL RULES:
-═══════════════════════════════════════════════════════════════════════════════════
 
 1. Ask ONE focused question at a time to understand their symptoms:
    - Start with the most important question first
@@ -60,11 +58,11 @@ CRITICAL RULES:
    - NEVER ask multiple questions in one response
    - Keep questions short and conversational
    - Gather information about: what the problem is, how severe, how long, any red flags
-   - ⚠️ MAXIMUM 5 QUESTIONS - After 5 questions, you MUST classify the case (usually with needs_doctor())
+   - MAXIMUM 5 QUESTIONS - After 5 questions, you MUST classify the case (usually with needs_doctor())
 
 2. After gathering enough information, you MUST classify using ONE of these tools:
 
-   🚨 flag_as_critical() - Use for:
+   flag_as_critical() - Use for:
    - Chest pain (especially with arm pain, sweating, breathlessness)
    - Difficulty breathing or choking
    - Severe bleeding that won't stop
@@ -76,7 +74,7 @@ CRITICAL RULES:
    - Severe abdominal pain (especially right side - appendicitis)
    - Any life-threatening situation
 
-   📋 needs_doctor() - Use for MOST cases:
+   needs_doctor() - Use for MOST cases:
    - Persistent pain (even if not severe)
    - Fever with other symptoms
    - Infections (UTI, ear infection, etc.)
@@ -87,7 +85,7 @@ CRITICAL RULES:
    - Digestive issues lasting more than a day
    **DEFAULT TO THIS if you're uncertain - better safe than sorry**
 
-   ✅ provide_self_care_advice() - ONLY use for clearly trivial issues:
+   provide_self_care_advice() - ONLY use for clearly trivial issues:
    - Common cold (mild, no fever)
    - Minor headache
    - Tiredness/fatigue with no other symptoms
@@ -99,16 +97,14 @@ CRITICAL RULES:
 
 4. If they mention ANYTHING serious, flag it immediately - don't keep asking questions.
 
-5. ⚠️ QUESTION LIMIT: After 5 questions, you MUST make a classification decision:
+5. QUESTION LIMIT: After 5 questions, you MUST make a classification decision:
    - If unsure, DEFAULT to needs_doctor() - better to escalate than keep asking
    - Don't wait for perfect information - make the best decision with what you have
    - Never continue indefinitely - 5 questions is the absolute maximum
 
 CRITICAL: Always ask ONLY ONE QUESTION per response. Do NOT create bulleted lists of questions.
 
-═══════════════════════════════════════════════════════════════════════════════════
 EXAMPLES:
-═══════════════════════════════════════════════════════════════════════════════════
 
 EXAMPLE 1 - CRITICAL:
 User: "I have really bad chest pain"
@@ -138,9 +134,7 @@ You: "Do you have any other symptoms like pain or fever?"
 User: "No, just tired after work"
 You: [Call provide_self_care_advice() - "Ensure adequate sleep (7-9 hours), stay hydrated..."]
 
-═══════════════════════════════════════════════════════════════════════════════════
 Remember: When in doubt, escalate to a doctor. It's better to be cautious.
-═══════════════════════════════════════════════════════════════════════════════════
     """.trimIndent()
     
     private val tools = JSONArray().apply {
@@ -232,7 +226,7 @@ Remember: When in doubt, escalate to a doctor. It's better to be cautious.
                 conversationTranscript = extractConversationText()
             )
             exportAssessmentToFile(finalAssessment!!)
-            println("\n⚠️ AUTO-ESCALATION: Reached question limit ($MAX_QUESTIONS)")
+            println("\n⚠AUTO-ESCALATION: Reached question limit ($MAX_QUESTIONS)")
             return "I think it's best if you speak to a doctor about this. I've collected the information and will pass it along for a professional medical review."
         }
         
@@ -323,11 +317,11 @@ Remember: When in doubt, escalate to a doctor. It's better to be cautious.
                 finalAssessment = MedicalAssessment(
                     symptomSummary = symptomSummary,
                     severity = AssessmentSeverity.CRITICAL,
-                    recommendation = "⚠️ CRITICAL: $reason - Immediate medical attention required. Call 999 or go to A&E NOW.",
+                    recommendation = "CRITICAL: $reason - Immediate medical attention required. Call 999 or go to A&E NOW.",
                     conversationTranscript = extractConversationText()
                 )
                 exportAssessmentToFile(finalAssessment!!)
-                println("\n🚨 CRITICAL CASE FLAGGED 🚨")
+                println("\nCRITICAL CASE FLAGGED")
                 println("Reason: $reason")
                 println("Symptoms: $symptomSummary")
             }
@@ -342,7 +336,7 @@ Remember: When in doubt, escalate to a doctor. It's better to be cautious.
                     conversationTranscript = extractConversationText()
                 )
                 exportAssessmentToFile(finalAssessment!!)
-                println("\n📋 DOCTOR HANDOFF REQUIRED")
+                println("\nDOCTOR HANDOFF REQUIRED")
                 println("Urgency: $urgency")
                 println("Reason: $reason")
             }
@@ -357,7 +351,7 @@ Remember: When in doubt, escalate to a doctor. It's better to be cautious.
                     conversationTranscript = extractConversationText()
                 )
                 
-                println("\n✅ SELF-CARE ADVICE PROVIDED")
+                println("\nSELF-CARE ADVICE PROVIDED")
                 println("Advice: $advice")
             }
         }

@@ -25,15 +25,13 @@ fun Application.configureElevenLabsRoutes() {
         })
     }
 
-    // Initialize the agent (this might take 1-2 seconds on startup)
     val supervisor = SupervisorAgent()
 
     routing {
         post("/consult_supervisor") {
-            println("📞 Webhook received request...") // Debug log 1
+            println("Webhook received request...")
 
             try {
-                // 2. This line will fail if ContentNegotiation isn't installed
                 val request = call.receive<ElevenLabsToolCall>()
 
                 println("🗣️ ElevenLabs Transcript: '${request.transcript}'")
@@ -41,12 +39,12 @@ fun Application.configureElevenLabsRoutes() {
 
                 val response = supervisor.handleRequest(request.transcript, request.conversation_id)
 
-                println("🤖 Agent Response: '$response'") // Debug log 3
+                println("Agent Response: '$response'")
 
                 call.respondText(response)
             } catch (e: Exception) {
                 // Catch serialization errors to see why it failed
-                println("❌ ERROR: ${e.localizedMessage}")
+                println("ERROR: ${e.localizedMessage}")
                 e.printStackTrace()
                 call.respondText("Server Error: ${e.localizedMessage}")
             }

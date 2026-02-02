@@ -19,13 +19,10 @@ import example.agents.specialists.police.PoliceBridge
 class SupervisorAgent {
     private val apiKey = System.getenv("ANTHROPIC_API_KEY") ?: error("Missing API Key")
 
-    // Keep the executor static/shared if it's just an HTTP client wrapper to save resources.
-    // If it holds state, move it inside handleRequest too.
     private val executor = simpleAnthropicExecutor(apiKey)
-    
-    // Store agents per conversation to maintain state
+
     private val conversationAgents = mutableMapOf<String, ConversationAgents>()
-    
+
     data class ConversationAgents(
         val locAgent: LocationAgent,
         val medAgent: MedicalAgent,
@@ -35,19 +32,17 @@ class SupervisorAgent {
     )
 
     suspend fun handleRequest(transcript: String, conversationId: String = "default"): String {
-        // Get or create agents for this conversation
         val agents = conversationAgents.getOrPut(conversationId) {
             println("[INFO] Creating new agent set for conversation: $conversationId")
             ConversationAgents(
                 locAgent = LocationAgent(apiKey),
-                medAgent = MedicalAgent(apiKey),
+                medAgent = MedicalAgent(),
                 policeAgent = PoliceAgent(apiKey),
                 fireAgent = FireHazmatAgent(apiKey),
                 nhsAgent = MedicalAssessmentAgent(apiKey)
             )
         }
 
-        // 2. Create Bridges (Tools) using persistent agents
         val bridges = ToolRegistry.Companion {
             tools(LocationBridge(agents.locAgent).asTools())
             tools(MedicalBridge(agents.medAgent).asTools())
@@ -56,12 +51,11 @@ class SupervisorAgent {
             tools(NHSBridge(agents.nhsAgent).asTools())
         }
 
-        // 3. The Supervisor Brain (Fresh Instance)
         val agent = AIAgent.Companion(
             promptExecutor = executor,
             llmModel = AnthropicModels.Haiku_4_5,
             systemPrompt = """
-            You are the 911 Operations Supervisor AI connected to an emergency operator. Your Goal: Support and coordinate emergency response and provide clear, spoken instructions to the operator, who is speaking to the caller.
+            You are the 999 Operations Supervisor AI connected to an emergency operator. Your Goal: Support and coordinate emergency response and provide clear, spoken instructions to the operator, who is speaking to the caller.
             
             Resources:
             - Use 'consultLocationSpecialist' to verify addresses and get unit ETAs.
@@ -101,7 +95,6 @@ class SupervisorAgent {
             toolRegistry = bridges
         )
 
-        // 4. Run the fresh agent
         return agent.run(transcript)
     }
 }

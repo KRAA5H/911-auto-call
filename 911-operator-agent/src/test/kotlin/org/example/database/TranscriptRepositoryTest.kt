@@ -113,7 +113,7 @@ class TranscriptRepositoryTest {
         
         // Verify ordering by timestamp
         assertEquals("agent", transcripts[0][Transcripts.speaker])
-        assertEquals("911, what's your emergency?", transcripts[0][Transcripts.text])
+        assertEquals("999, what's your emergency?", transcripts[0][Transcripts.text])
         
         assertEquals("caller", transcripts[1][Transcripts.speaker])
         assertEquals("There's a fire at 123 Main St", transcripts[1][Transcripts.text])

@@ -6,7 +6,7 @@ import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
-class MedicalAgent(private val apiKey: String) {
+class MedicalAgent() {
 
     val agent = AIAgent(
         promptExecutor = simpleAnthropicExecutor(Config.ANTHROPIC_API_KEY),
@@ -25,7 +25,7 @@ class MedicalAgent(private val apiKey: String) {
             breathing = breathing
         )
 
-        // Stage 1 & 2: Find protocol
+        // Find protocol
         val protocol = retrieveProtocol(utterance, patientContext)
 
         if (protocol == null) {
@@ -36,7 +36,7 @@ class MedicalAgent(private val apiKey: String) {
             """.trimIndent()
         }
 
-        // Stage 3: Generate instructions
+        // Generate instructions
         val response = generateInstructions(
             protocol = protocol,
             utterance = utterance,
@@ -72,7 +72,6 @@ class MedicalAgent(private val apiKey: String) {
         val prompt = buildSelectionPrompt(utterance, patientContext, candidates)
         val response = agent.run(prompt)
 
-        // Parse the protocol ID from Claude's response
         val protocolId = parseProtocolId(response)
 
         return@runBlocking candidates.find { it.id == protocolId }
@@ -117,7 +116,6 @@ class MedicalAgent(private val apiKey: String) {
 
     private fun parseProtocolId(response: String): Int? {
         return try {
-            // Try to parse as JSON first
             val cleanResponse = response.trim()
                 .removePrefix("```json")
                 .removePrefix("```")
@@ -127,7 +125,6 @@ class MedicalAgent(private val apiKey: String) {
             val selectionResponse = json.decodeFromString<ClaudeSelectionResponse>(cleanResponse)
             selectionResponse.protocolId
         } catch (e: Exception) {
-            // Fallback: try to extract any number from the response
             val numbers = Regex("""protocolId['":\s]+(\d+)""").find(response)
             numbers?.groupValues?.get(1)?.toIntOrNull()
         }
@@ -137,46 +134,27 @@ class MedicalAgent(private val apiKey: String) {
         utterance: String,
         patientContext: PatientContext
     ): Protocol? {
-        val startTime = System.currentTimeMillis()
-
-        // ============ STAGE 1: KEYWORD MATCHING ============
-//        println("Stage 1: Checking critical keywords...")
         val keywordProtocolId = KeywordMatcher.findProtocolId(utterance)
 
         if (keywordProtocolId != null) {
-            val protocol = ProtocolRepository.getProtocolById(keywordProtocolId)
-            val elapsed = System.currentTimeMillis() - startTime
-//            println("✓ Stage 1 HIT: Found protocol in ${elapsed}ms")
-            return protocol
+            return ProtocolRepository.getProtocolById(keywordProtocolId)
         }
 
-//        println("Stage 1 MISS: No critical keyword match")
-
-        // ============ STAGE 2: CLAUDE SELECTION ============
-//        println("Stage 2: Querying database for candidates...")
         val candidates = ProtocolRepository.getCandidateProtocols(
             ageGroup = patientContext.ageGroup,
             limit = Config.MAX_PROTOCOLS_FOR_SELECTION
         )
 
         if (candidates.isEmpty()) {
-//            println("✗ Stage 2 MISS: No candidate protocols found")
+            println("✗ Stage 2 MISS: No candidate protocols found")
             return null
         }
 
-//        println("Stage 2: Found ${candidates.size} candidates, asking Claude...")
         val selectedProtocol = selectBestProtocol(
             utterance = utterance,
             patientContext = patientContext,
             candidates = candidates
         )
-
-        val elapsed = System.currentTimeMillis() - startTime
-        if (selectedProtocol != null) {
-//            println("✓ Stage 2 HIT: Found protocol in ${elapsed}ms")
-        } else {
-//            println("✗ Stage 2 MISS: Claude couldn't select a protocol")
-        }
 
         return selectedProtocol
     }
