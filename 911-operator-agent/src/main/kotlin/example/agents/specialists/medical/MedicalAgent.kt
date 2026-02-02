@@ -5,6 +5,7 @@ import ai.koog.prompt.executor.clients.anthropic.AnthropicModels
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import java.io.PrintWriter
 
 class MedicalAgent() {
 

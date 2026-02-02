@@ -4,6 +4,7 @@ import ai.koog.agents.core.tools.annotations.Tool
 import ai.koog.agents.core.tools.annotations.LLMDescription
 import ai.koog.agents.core.tools.reflect.ToolSet
 import org.example.agents.police.PoliceAgent
+import java.io.PrintWriter
 
 @LLMDescription("Interface for contacting the Police & Safety Department.")
 class PoliceBridge(private val policeAgent: PoliceAgent) : ToolSet {

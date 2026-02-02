@@ -5,6 +5,7 @@ import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.asTools
 import ai.koog.prompt.executor.clients.anthropic.AnthropicModels.Haiku_4_5
 import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
+import java.io.PrintWriter
 
 class LocationAgent(apiKey: String) {
 

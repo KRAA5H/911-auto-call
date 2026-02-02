@@ -15,6 +15,8 @@ import example.agents.specialists.nhs111.MedicalAssessmentAgent
 import example.agents.specialists.nhs111.NHSBridge
 import org.example.agents.police.PoliceAgent
 import example.agents.specialists.police.PoliceBridge
+import java.io.File
+import java.io.PrintWriter
 
 class SupervisorAgent {
     private val apiKey = System.getenv("ANTHROPIC_API_KEY") ?: error("Missing API Key")
