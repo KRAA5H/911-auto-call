@@ -65,18 +65,22 @@ fun Application.configureElevenLabsRoutes(
     routing {
         // --- ROUTE 1: Live Tool Call (Supervisor) ---
         post("/consult_supervisor") {
-            println("📞 Webhook received request...")
+            println("Webhook received request...")
 
             try {
                 val request = call.receive<ElevenLabsToolCall>()
-                println("🗣️ Query: '${request.transcript}'")
 
-                val response = supervisor.handleRequest(request.transcript)
-                println("🤖 Agent Response: '$response'")
+                println("🗣️ ElevenLabs Transcript: '${request.transcript}'")
+                println("📞 Conversation ID: '${request.conversation_id}'")
+
+                val response = supervisor.handleRequest(request.transcript, request.conversation_id)
+
+                println("Agent Response: '$response'")
 
                 call.respondText(response)
             } catch (e: Exception) {
-                println("❌ ERROR: ${e.localizedMessage}")
+                // Catch serialization errors to see why it failed
+                println("ERROR: ${e.localizedMessage}")
                 e.printStackTrace()
                 call.respondText("Server Error: ${e.localizedMessage}")
             }

@@ -8,6 +8,9 @@ import ai.koog.prompt.executor.llms.all.simpleAnthropicExecutor
 import java.io.PrintWriter
 
 class FireHazmatAgent(apiKey: String) {
+    private val emergencyExportDir = "/Users/andrewrobertson/dev/911-auto-call/911-operator-agent/to_emergency"
+    private val conversationHistory = mutableListOf<String>()
+    
     private val tools = FireHazmatTools()
 
     // Create the specialized registry for this agent
@@ -58,9 +61,60 @@ class FireHazmatAgent(apiKey: String) {
         """.trimIndent(),
         toolRegistry = registry
     )
+    
+    private fun exportEmergencyReport(query: String, response: String) {
+        val dir = java.io.File(emergencyExportDir)
+        if (!dir.exists()) {
+            dir.mkdirs()
+            println("[INFO] Created directory: $emergencyExportDir")
+        }
+        
+        try {
+            val timestamp = java.time.LocalDateTime.now()
+            val dateStr = timestamp.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
+            
+            // Determine incident type for filename
+            val queryLower = query.lowercase()
+            val incidentType = when {
+                queryLower.contains("fire") -> "Fire"
+                queryLower.contains("hazmat") || queryLower.contains("chemical") -> "Hazmat"
+                queryLower.contains("explosion") || queryLower.contains("blast") -> "Explosion"
+                queryLower.contains("placard") -> "Hazmat"
+                else -> "FireHazmat"
+            }
+            
+            val fileName = "FIRE_${incidentType}_$dateStr.txt"
+            val filePath = "$emergencyExportDir/$fileName"
+            
+            val fileContent = buildString {
+                appendLine("==== FIRE/HAZMAT EMERGENCY REPORT ====")
+                appendLine("Timestamp: $timestamp")
+                appendLine("Incident Type: $incidentType")
+                appendLine("\n--- Caller Query ---")
+                appendLine(query)
+                appendLine("\n--- Agent Response ---")
+                appendLine(response)
+                appendLine("\n--- Conversation History ---")
+                conversationHistory.forEach { appendLine(it) }
+            }
+            
+            java.io.File(filePath).writeText(fileContent)
+            println("[INFO] Fire/Hazmat report exported to: $filePath")
+        } catch (e: Exception) {
+            println("[ERROR] Could not export fire/hazmat report: ${e.message}")
+            e.printStackTrace()
+        }
+    }
 
     // The public method the rest of the app uses to talk to this agent
     suspend fun ask(query: String): String {
-        return agent.run(query)
+        conversationHistory.add("Caller: $query")
+        val response = agent.run(query)
+        conversationHistory.add("Agent: $response")
+        
+        // Export all fire/hazmat reports (they're all potentially serious)
+        exportEmergencyReport(query, response)
+        
+        return response
     }
 }

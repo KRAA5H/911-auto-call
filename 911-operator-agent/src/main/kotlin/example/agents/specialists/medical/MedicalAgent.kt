@@ -7,12 +7,55 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.io.PrintWriter
 
-class MedicalAgent(private val apiKey: String) {
+class MedicalAgent() {
+
+    private val emergencyExportDir = "/Users/andrewrobertson/dev/911-auto-call/911-operator-agent/to_emergency"
+    private val conversationHistory = mutableListOf<String>()
 
     val agent = AIAgent(
         promptExecutor = simpleAnthropicExecutor(Config.ANTHROPIC_API_KEY),
         llmModel = AnthropicModels.Haiku_4_5
     )
+    
+    private fun exportEmergencyReport(utterance: String, response: MedicalResponse) {
+        val dir = java.io.File(emergencyExportDir)
+        if (!dir.exists()) {
+            dir.mkdirs()
+            println("[INFO] Created directory: $emergencyExportDir")
+        }
+        
+        try {
+            val timestamp = java.time.LocalDateTime.now()
+            val dateStr = timestamp.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
+            val safeCondition = response.conditionDetected.take(25).replace("[^a-zA-Z0-9]+".toRegex(), "_").trim('_')
+            val fileName = "MEDICAL_${safeCondition}_$dateStr.txt"
+            val filePath = "$emergencyExportDir/$fileName"
+            
+            val fileContent = buildString {
+                appendLine("==== MEDICAL EMERGENCY REPORT ====")
+                appendLine("Timestamp: $timestamp")
+                appendLine("Condition: ${response.conditionDetected}")
+                appendLine("Severity: ${response.severity}")
+                appendLine("Protocol ID: ${response.protocolId}")
+                appendLine("\n--- Immediate Action ---")
+                appendLine(response.immediateInstruction)
+                appendLine("\n--- Step-by-Step Instructions ---")
+                response.stepByStep.forEachIndexed { i, step -> appendLine("${i + 1}. $step") }
+                appendLine("\n--- Critical Warnings ---")
+                response.criticalPoints.forEach { appendLine("⚠️ $it") }
+                appendLine("\n--- Caller Message ---")
+                appendLine(utterance)
+                appendLine("\n--- Conversation History ---")
+                conversationHistory.forEach { appendLine(it) }
+            }
+            
+            java.io.File(filePath).writeText(fileContent)
+            println("[INFO] Medical report exported to: $filePath")
+        } catch (e: Exception) {
+            println("[ERROR] Could not export medical report: ${e.message}")
+            e.printStackTrace()
+        }
+    }
 
     fun getMedicalGuidance(
         utterance: String,
@@ -20,13 +63,15 @@ class MedicalAgent(private val apiKey: String) {
         conscious: Boolean?,
         breathing: Boolean?
     ): String {
+        conversationHistory.add("Caller: $utterance")
+        
         val patientContext = PatientContext(
             ageGroup = ageGroup,
             conscious = conscious,
             breathing = breathing
         )
 
-        // Stage 1 & 2: Find protocol
+        // Find protocol
         val protocol = retrieveProtocol(utterance, patientContext)
 
         if (protocol == null) {
@@ -37,15 +82,22 @@ class MedicalAgent(private val apiKey: String) {
             """.trimIndent()
         }
 
-        // Stage 3: Generate instructions
+        // Generate instructions
         val response = generateInstructions(
             protocol = protocol,
             utterance = utterance,
             patientContext = patientContext
         )
+        
+        // Export report for critical/high severity cases
+        if (response.severity.contains("CRITICAL", ignoreCase = true) || 
+            response.severity.contains("HIGH", ignoreCase = true) ||
+            response.severity.contains("IMMEDIATE", ignoreCase = true)) {
+            exportEmergencyReport(utterance, response)
+        }
 
         // Format for supervisor
-        return """
+        val formattedResponse = """
             CONDITION: ${response.conditionDetected}
             SEVERITY: ${response.severity}
             
@@ -59,6 +111,9 @@ class MedicalAgent(private val apiKey: String) {
             
             ${response.reassurance}
         """.trimIndent()
+        
+        conversationHistory.add("System: $formattedResponse")
+        return formattedResponse
     }
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -73,7 +128,6 @@ class MedicalAgent(private val apiKey: String) {
         val prompt = buildSelectionPrompt(utterance, patientContext, candidates)
         val response = agent.run(prompt)
 
-        // Parse the protocol ID from Claude's response
         val protocolId = parseProtocolId(response)
 
         return@runBlocking candidates.find { it.id == protocolId }
@@ -118,7 +172,6 @@ class MedicalAgent(private val apiKey: String) {
 
     private fun parseProtocolId(response: String): Int? {
         return try {
-            // Try to parse as JSON first
             val cleanResponse = response.trim()
                 .removePrefix("```json")
                 .removePrefix("```")
@@ -128,7 +181,6 @@ class MedicalAgent(private val apiKey: String) {
             val selectionResponse = json.decodeFromString<ClaudeSelectionResponse>(cleanResponse)
             selectionResponse.protocolId
         } catch (e: Exception) {
-            // Fallback: try to extract any number from the response
             val numbers = Regex("""protocolId['":\s]+(\d+)""").find(response)
             numbers?.groupValues?.get(1)?.toIntOrNull()
         }
@@ -138,46 +190,27 @@ class MedicalAgent(private val apiKey: String) {
         utterance: String,
         patientContext: PatientContext
     ): Protocol? {
-        val startTime = System.currentTimeMillis()
-
-        // ============ STAGE 1: KEYWORD MATCHING ============
-//        println("Stage 1: Checking critical keywords...")
         val keywordProtocolId = KeywordMatcher.findProtocolId(utterance)
 
         if (keywordProtocolId != null) {
-            val protocol = ProtocolRepository.getProtocolById(keywordProtocolId)
-            val elapsed = System.currentTimeMillis() - startTime
-//            println("✓ Stage 1 HIT: Found protocol in ${elapsed}ms")
-            return protocol
+            return ProtocolRepository.getProtocolById(keywordProtocolId)
         }
 
-//        println("Stage 1 MISS: No critical keyword match")
-
-        // ============ STAGE 2: CLAUDE SELECTION ============
-//        println("Stage 2: Querying database for candidates...")
         val candidates = ProtocolRepository.getCandidateProtocols(
             ageGroup = patientContext.ageGroup,
             limit = Config.MAX_PROTOCOLS_FOR_SELECTION
         )
 
         if (candidates.isEmpty()) {
-//            println("✗ Stage 2 MISS: No candidate protocols found")
+            println("✗ Stage 2 MISS: No candidate protocols found")
             return null
         }
 
-//        println("Stage 2: Found ${candidates.size} candidates, asking Claude...")
         val selectedProtocol = selectBestProtocol(
             utterance = utterance,
             patientContext = patientContext,
             candidates = candidates
         )
-
-        val elapsed = System.currentTimeMillis() - startTime
-        if (selectedProtocol != null) {
-//            println("✓ Stage 2 HIT: Found protocol in ${elapsed}ms")
-        } else {
-//            println("✗ Stage 2 MISS: Claude couldn't select a protocol")
-        }
 
         return selectedProtocol
     }
