@@ -8,10 +8,53 @@ import kotlinx.serialization.json.Json
 
 class MedicalAgent() {
 
+    private val emergencyExportDir = "/Users/andrewrobertson/dev/911-auto-call/911-operator-agent/to_emergency"
+    private val conversationHistory = mutableListOf<String>()
+
     val agent = AIAgent(
         promptExecutor = simpleAnthropicExecutor(Config.ANTHROPIC_API_KEY),
         llmModel = AnthropicModels.Haiku_4_5
     )
+    
+    private fun exportEmergencyReport(utterance: String, response: MedicalResponse) {
+        val dir = java.io.File(emergencyExportDir)
+        if (!dir.exists()) {
+            dir.mkdirs()
+            println("[INFO] Created directory: $emergencyExportDir")
+        }
+        
+        try {
+            val timestamp = java.time.LocalDateTime.now()
+            val dateStr = timestamp.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
+            val safeCondition = response.conditionDetected.take(25).replace("[^a-zA-Z0-9]+".toRegex(), "_").trim('_')
+            val fileName = "MEDICAL_${safeCondition}_$dateStr.txt"
+            val filePath = "$emergencyExportDir/$fileName"
+            
+            val fileContent = buildString {
+                appendLine("==== MEDICAL EMERGENCY REPORT ====")
+                appendLine("Timestamp: $timestamp")
+                appendLine("Condition: ${response.conditionDetected}")
+                appendLine("Severity: ${response.severity}")
+                appendLine("Protocol ID: ${response.protocolId}")
+                appendLine("\n--- Immediate Action ---")
+                appendLine(response.immediateInstruction)
+                appendLine("\n--- Step-by-Step Instructions ---")
+                response.stepByStep.forEachIndexed { i, step -> appendLine("${i + 1}. $step") }
+                appendLine("\n--- Critical Warnings ---")
+                response.criticalPoints.forEach { appendLine("⚠️ $it") }
+                appendLine("\n--- Caller Message ---")
+                appendLine(utterance)
+                appendLine("\n--- Conversation History ---")
+                conversationHistory.forEach { appendLine(it) }
+            }
+            
+            java.io.File(filePath).writeText(fileContent)
+            println("[INFO] Medical report exported to: $filePath")
+        } catch (e: Exception) {
+            println("[ERROR] Could not export medical report: ${e.message}")
+            e.printStackTrace()
+        }
+    }
 
     fun getMedicalGuidance(
         utterance: String,
@@ -19,6 +62,8 @@ class MedicalAgent() {
         conscious: Boolean?,
         breathing: Boolean?
     ): String {
+        conversationHistory.add("Caller: $utterance")
+        
         val patientContext = PatientContext(
             ageGroup = ageGroup,
             conscious = conscious,
@@ -42,9 +87,16 @@ class MedicalAgent() {
             utterance = utterance,
             patientContext = patientContext
         )
+        
+        // Export report for critical/high severity cases
+        if (response.severity.contains("CRITICAL", ignoreCase = true) || 
+            response.severity.contains("HIGH", ignoreCase = true) ||
+            response.severity.contains("IMMEDIATE", ignoreCase = true)) {
+            exportEmergencyReport(utterance, response)
+        }
 
         // Format for supervisor
-        return """
+        val formattedResponse = """
             CONDITION: ${response.conditionDetected}
             SEVERITY: ${response.severity}
             
@@ -58,6 +110,9 @@ class MedicalAgent() {
             
             ${response.reassurance}
         """.trimIndent()
+        
+        conversationHistory.add("System: $formattedResponse")
+        return formattedResponse
     }
     private val json = Json { ignoreUnknownKeys = true }
 
